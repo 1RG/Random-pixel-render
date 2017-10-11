@@ -51,7 +51,8 @@ public class Main extends Application{
 			
 			RootController rootController = loader.getController();
 			rootController.setMain(this);
-			rootController.setResolutionWH(renderLogic.getWidth(), renderLogic.getHeight());
+			rootController.setImageData(renderLogic.getImageWidth(), renderLogic.getImageHeight());
+			rootController.setVideoData(renderLogic.getVideoWidth(), renderLogic.getVideoHeight(), renderLogic.getVideoFps(), renderLogic.getVideoLength_ms());
 			
 			primaryStage.show();
 

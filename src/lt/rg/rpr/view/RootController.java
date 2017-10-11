@@ -1,5 +1,6 @@
 package lt.rg.rpr.view;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -10,36 +11,49 @@ public class RootController {
 	private Main main;
 	
 	@FXML
-	private TextField resTFWidth;
+	private TextField imgResTFWidth;
 	
 	@FXML
-	private TextField resTFHeight;
+	private TextField imgResTFHeight;
+	
+	@FXML
+	private TextField vidResTFWidth;
 		
+	@FXML
+	private TextField vidResTFHeight;
+	
+	@FXML
+	private TextField vidFpsTF;
+	
+	@FXML
+	private TextField vidLengthTF;
+	
 	@FXML
 	public void buttonRImage() {
 		System.out.println("Render Image");
-		main.getRenderLogic().setWidth(Integer.parseInt(resTFWidth.getText()));
-		main.getRenderLogic().setHeight(Integer.parseInt(resTFHeight.getText()));
+		main.getRenderLogic().setImageWidth(Integer.parseInt(imgResTFWidth.getText()));
+		main.getRenderLogic().setImageHeight(Integer.parseInt(imgResTFHeight.getText()));
 		main.getRenderLogic().createImage();
 	}
 	
 	@FXML
 	public void buttonRVideo() {
 		System.out.println("Render Video");
-		main.getRenderLogic().setWidth(Integer.parseInt(resTFWidth.getText()));
-		main.getRenderLogic().setHeight(Integer.parseInt(resTFHeight.getText()));
+		main.getRenderLogic().setVideoWidth(Integer.parseInt(vidResTFWidth.getText()));
+		main.getRenderLogic().setVideoHeight(Integer.parseInt(vidResTFHeight.getText()));
+		main.getRenderLogic().setVideoFps(Integer.parseInt(vidFpsTF.getText()));
+		main.getRenderLogic().setVideoLength_ms(Integer.parseInt(vidLengthTF.getText()));
 		main.getRenderLogic().createVideo();
 	}
 	
 	@FXML
-	public void buttonTest() {
-		System.out.println(resTFWidth.getText()+" - "+ resTFHeight.getText());
-	}
-	
-	@FXML
 	private void initialize(){		
-		resTFWidth.textProperty().addListener(onlyIntFilter(resTFWidth));
-		resTFHeight.textProperty().addListener(onlyIntFilter(resTFHeight));
+		imgResTFWidth.textProperty().addListener(onlyIntFilter(imgResTFWidth));
+		imgResTFHeight.textProperty().addListener(onlyIntFilter(imgResTFHeight));
+		vidResTFWidth.textProperty().addListener(onlyIntFilter(vidResTFWidth));
+		vidResTFHeight.textProperty().addListener(onlyIntFilter(vidResTFHeight));
+		vidFpsTF.textProperty().addListener(onlyIntFilter(vidFpsTF));
+		vidLengthTF.textProperty().addListener(onlyIntFilter(vidLengthTF));
 	}
 	
 	private ChangeListener<String> onlyIntFilter(TextField field) {
@@ -52,10 +66,24 @@ public class RootController {
 						if(i < 1) {
 							field.textProperty().set(oldValue);
 						}else {
-							field.textProperty().set(i+"");
+
+// fix first variable zero input
+							if(!newValue.equals(i+"")) {
+								Platform.runLater(() -> {
+									field.textProperty().set(i+""); 
+				            	});
+							}
+							
+							if(field.getStyleClass().contains("error_feild")) {
+								field.getStyleClass().remove("error_feild");
+							}
 						}
 					} catch (Exception e) {
 						field.textProperty().set(oldValue);
+					}
+				}else {
+					if(!field.getStyleClass().contains("error_feild")) {
+						field.getStyleClass().add("error_feild");
 					}
 				}
 			}
@@ -68,8 +96,15 @@ public class RootController {
 		this.main = main;
 	}
 	
-	public void setResolutionWH(int width, int height) {
-		resTFWidth.setText(width+"");
-		resTFHeight.setText(height+"");
+	public void setImageData(int width, int height) {
+		imgResTFWidth.setText(width+"");
+		imgResTFHeight.setText(height+"");
+	}
+	
+	public void setVideoData(int width, int height, int fps, int length) {
+		vidResTFWidth.setText(width+"");
+		vidResTFHeight.setText(height+"");
+		vidFpsTF.setText(fps+"");
+		vidLengthTF.setText(length+"");
 	}
 }
