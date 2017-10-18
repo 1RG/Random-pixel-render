@@ -1,9 +1,10 @@
 package lt.rg.rpr.view;
 
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import lt.rg.rpr.Main;
 
@@ -15,6 +16,15 @@ public class RootController {
 	
 	@FXML
 	private TextField imgResTFHeight;
+	
+	@FXML
+	private Label imgStaL;
+	
+	@FXML
+	private Button imgCancelB;
+	
+	@FXML
+	private Button imgRenderB;
 	
 	@FXML
 	private TextField vidResTFWidth;
@@ -29,21 +39,31 @@ public class RootController {
 	private TextField vidLengthTF;
 	
 	@FXML
+	private Label vidStaL;
+	
+	@FXML
+	private Button vidCancelB;
+	
+	@FXML
+	private Button vidRenderB;
+	
+	@FXML
 	public void buttonRImage() {
 		System.out.println("Render Image");
-		main.getRenderLogic().setImageWidth(Integer.parseInt(imgResTFWidth.getText()));
-		main.getRenderLogic().setImageHeight(Integer.parseInt(imgResTFHeight.getText()));
-		main.getRenderLogic().createImage();
+
+		main.renderImage(Integer.parseInt(imgResTFWidth.getText()), Integer.parseInt(imgResTFHeight.getText()));
 	}
 	
 	@FXML
 	public void buttonRVideo() {
 		System.out.println("Render Video");
-		main.getRenderLogic().setVideoWidth(Integer.parseInt(vidResTFWidth.getText()));
-		main.getRenderLogic().setVideoHeight(Integer.parseInt(vidResTFHeight.getText()));
-		main.getRenderLogic().setVideoFps(Integer.parseInt(vidFpsTF.getText()));
-		main.getRenderLogic().setVideoLength_ms(Integer.parseInt(vidLengthTF.getText()));
-		main.getRenderLogic().createVideo();
+
+		main.renderVideo(
+				Integer.parseInt(vidResTFWidth.getText()),
+				Integer.parseInt(vidResTFHeight.getText()),
+				Integer.parseInt(vidFpsTF.getText()),
+				Integer.parseInt(vidLengthTF.getText())
+		);
 	}
 	
 	@FXML
@@ -56,6 +76,16 @@ public class RootController {
 		vidLengthTF.textProperty().addListener(onlyIntFilter(vidLengthTF));
 	}
 	
+	@FXML
+	private void imageCancel() {
+		main.getImageLogicNote().setCancel(true);
+	}
+	
+	@FXML
+	private void videoCancel() {
+		main.getImageLogicNote().setCancel(true);
+	}
+	
 	private ChangeListener<String> onlyIntFilter(TextField field) {
 		ChangeListener<String> changeListener = new ChangeListener<String>() {
 			@Override
@@ -63,16 +93,16 @@ public class RootController {
 				if(newValue.length() != 0) {
 					try {
 						int i = Integer.parseInt(newValue);
-						if(i < 1) {
-							field.textProperty().set(oldValue);
+						if(i < 0) {
+							field.textProperty().set(i*(-1)+"");
 						}else {
 
 // fix first variable zero input
-							if(!newValue.equals(i+"")) {
-								Platform.runLater(() -> {
-									field.textProperty().set(i+""); 
-				            	});
-							}
+//							if(!newValue.equals(i+"")) {
+//								Platform.runLater(() -> {
+//									field.textProperty().set(i+""); 
+//				            	});
+//							}
 							
 							if(field.getStyleClass().contains("error_feild")) {
 								field.getStyleClass().remove("error_feild");
@@ -106,5 +136,12 @@ public class RootController {
 		vidResTFHeight.setText(height+"");
 		vidFpsTF.setText(fps+"");
 		vidLengthTF.setText(length+"");
+	}
+	
+	public void connectGUIElements() {
+		main.getImageLogicNote().setLable(imgStaL);
+		main.getImageLogicNote().setButton(imgRenderB, imgCancelB);
+		main.getVideoLogicNote().setLable(vidStaL);
+		main.getVideoLogicNote().setButton(vidRenderB, vidCancelB);
 	}
 }

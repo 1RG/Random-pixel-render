@@ -20,9 +20,10 @@ public class RenderLogic {
 	private int videoFps = 30;
 	private int videoLength_ms = 7000;
 	
-	public void createImage() {
-		checkRenderFolder();
-		
+	public void createImage(LogicNote logicNote) {
+		//Start
+		logicNote.runing(true);
+
 		String format = "png";
 		boolean usAlpha = false;
 		
@@ -30,6 +31,10 @@ public class RenderLogic {
 		BufferedImage img = new BufferedImage(imageWidth, imageHeight, imageType);
 		
 		for (int y = 0; y < imageHeight; y++) {
+			
+			// Time			
+			long start = System.currentTimeMillis();
+			
 			for (int x = 0; x < imageWidth; x++) {
 				int a = (int)(Math.random()*256);	//alpha
 				int r = a;//(int)(Math.random()*256);	//red
@@ -42,37 +47,102 @@ public class RenderLogic {
 					img.setRGB(x, y, new Color(r, g, b).getRGB());
 				}
 			}
+			
+			// Time
+			long end = System.currentTimeMillis() - start;
+			
+			if(logicNote.isCancel()) {
+				
+				//On Cancel
+				logicNote.display("Cancel");
+				logicNote.runing(false);
+				logicNote.setCancel(false);
+				System.out.println("Loop Cancel");
+				return;
+			}else {
+				if(end > 0) {
+					// Time
+					logicNote.display("Time left: "+  (end + end*(imageHeight - y))/1000l +"s");
+				}
+			}
 		}
 		
 		try {
+			checkRenderFolder();
 			File f = new File("render/image." + format);
+			
+			logicNote.display("Wraiting file...");
+			
 			ImageIO.write(img, format, f);
 		} catch (Exception e) {
 			System.out.println(e);
+			logicNote.setStatus(e);
+			
 		}
 		
-		System.out.println("Done");
+		//End
+		logicNote.display("Done");
+		logicNote.displayAlert();
+		logicNote.runing(false);
 	}
 	
-	public void createVideo() {
-		checkRenderFolder();
+	public void createVideo(LogicNote logicNote) {
+		//Start
+		logicNote.runing(true);
 		
+		checkRenderFolder();
+		SeekableByteChannel out = null;
 		try {
-			SeekableByteChannel out = NIOUtils.writableFileChannel("render/video.mp4");
+			 out = NIOUtils.writableFileChannel("render/video.mp4");
 			
 			AWTSequenceEncoder se = new AWTSequenceEncoder(out, new Rational(videoFps, 1));
 
-			for (int j = 0; j < ( videoLength_ms/1000 ) * videoFps; j++) {
+			int length = ( videoLength_ms/1000 ) * videoFps;
+			
+			for (int j = 0; j < length; j++) {
+				
+				// Time			
+				long start = System.currentTimeMillis();
+				
 				se.encodeImage(getImage());
-//				se.encodeImage(getImageX2());	
+//				se.encodeImage(getImageX2());
+				
+				// Time
+				long end = System.currentTimeMillis() - start;
+				
+				if(logicNote.isCancel()) {
+					
+					//On Cancel
+					logicNote.display("Cancel");
+					logicNote.runing(false);
+					logicNote.setCancel(false);
+					System.out.println("Loop Cancel");
+					se.finish();
+					NIOUtils.closeQuietly(out);
+					return;
+				}else {
+					if(end > 0) {
+						// Time
+						logicNote.display("Time left: "+  (end + end*(length - j))/1000l +"s");
+					}
+				}
 			}
-
+			
+			logicNote.display("Wraiting file...");
+			
 			se.finish();
 		} catch (Exception e) {
 			System.out.println(e);
+			logicNote.setStatus(e);
+		}finally {
+			NIOUtils.closeQuietly(out);
 		}
 		
+		//End
 		System.out.println("Done");
+		logicNote.display("Done");
+		logicNote.displayAlert();
+		logicNote.runing(false);
 	}
 	
 	private BufferedImage getImage() {
@@ -89,22 +159,22 @@ public class RenderLogic {
 		return img;
 	}
 	
-	private BufferedImage getImageX2() {
-		BufferedImage img = new BufferedImage(videoWidth*2, videoHeight*2, BufferedImage.TYPE_INT_RGB);
-		
-		for (int y = 0; y < videoHeight*2; y+=2) {
-			for (int x = 0; x < videoWidth*2; x+=2) {
-				int a = (int)(Math.random()*256);
-
-				img.setRGB(x, y, new Color(a, a, a).getRGB());
-				img.setRGB(x, y+1, new Color(a, a, a).getRGB());
-				img.setRGB(x+1, y, new Color(a, a, a).getRGB());
-				img.setRGB(x+1, y+1, new Color(a, a, a).getRGB());
-			}
-		}
-		
-		return img;
-	}
+//	private BufferedImage getImageX2() {
+//		BufferedImage img = new BufferedImage(videoWidth*2, videoHeight*2, BufferedImage.TYPE_INT_RGB);
+//		
+//		for (int y = 0; y < videoHeight*2; y+=2) {
+//			for (int x = 0; x < videoWidth*2; x+=2) {
+//				int a = (int)(Math.random()*256);
+//
+//				img.setRGB(x, y, new Color(a, a, a).getRGB());
+//				img.setRGB(x, y+1, new Color(a, a, a).getRGB());
+//				img.setRGB(x+1, y, new Color(a, a, a).getRGB());
+//				img.setRGB(x+1, y+1, new Color(a, a, a).getRGB());
+//			}
+//		}
+//		
+//		return img;
+//	}
 	
 	public void testVideoSupport() {
 		for (int i = 1; i <= 1000; i++) {

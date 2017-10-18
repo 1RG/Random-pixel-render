@@ -1,10 +1,13 @@
 package lt.rg.rpr;
 
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import lt.rg.rpr.model.LogicNote;
 import lt.rg.rpr.model.RenderLogic;
 import lt.rg.rpr.view.RootController;
 
@@ -14,7 +17,10 @@ public class Main extends Application{
 	private BorderPane root;
 	
 	private RenderLogic renderLogic;
-
+		
+	LogicNote imageLogicNote = new LogicNote();
+	LogicNote videoLogicNote = new LogicNote();
+	
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -30,10 +36,6 @@ public class Main extends Application{
 		long start = System.currentTimeMillis();
 
 		initRootLayout();
-			
-//		renderLogic.createImage();
-//		rl.createVideo();
-//		rl.testVideoSupport();
 		
 		long end = System.currentTimeMillis() - start;
 		System.out.println("Time: "+ end/1000f +"s");
@@ -53,15 +55,71 @@ public class Main extends Application{
 			rootController.setMain(this);
 			rootController.setImageData(renderLogic.getImageWidth(), renderLogic.getImageHeight());
 			rootController.setVideoData(renderLogic.getVideoWidth(), renderLogic.getVideoHeight(), renderLogic.getVideoFps(), renderLogic.getVideoLength_ms());
+			rootController.connectGUIElements();
+			
+			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+				
+				@Override
+				public void handle(WindowEvent event) {
+					System.out.println("EXIT");
+					imageLogicNote.setCancel(true);
+					videoLogicNote.setCancel(true);
+				}
+			});
 			
 			primaryStage.show();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	public LogicNote getImageLogicNote() {
+		return imageLogicNote;
+	}
+
+	public LogicNote getVideoLogicNote() {
+		return videoLogicNote;
+	}
+
+	public void setImageLogicNote(LogicNote imageLogicNote) {
+		this.imageLogicNote = imageLogicNote;
+	}
+
+	public void setVideoLogicNote(LogicNote videoLogicNote) {
+		this.videoLogicNote = videoLogicNote;
+	}
+
 	public RenderLogic getRenderLogic() {
 		return renderLogic;
+	}
+	
+	public void renderImage(int width, int height) {
+		renderLogic.setImageWidth(width);
+		renderLogic.setImageHeight(height);
+		
+		Thread thread = new Thread(new Runnable() {		
+			@Override
+			public void run() {
+				
+				renderLogic.createImage(imageLogicNote); 
+			}
+		});
+		thread.start();
+	}
+	
+	public void renderVideo(int width, int height, int fps, int length) {
+		renderLogic.setVideoWidth(width);
+		renderLogic.setVideoHeight(height);
+		renderLogic.setVideoFps(fps);
+		renderLogic.setVideoLength_ms(length);
+		
+		Thread thread = new Thread(new Runnable() {		
+			@Override
+			public void run() {
+				
+				renderLogic.createVideo(videoLogicNote);
+			}
+		});
+		thread.start();
 	}
 }
