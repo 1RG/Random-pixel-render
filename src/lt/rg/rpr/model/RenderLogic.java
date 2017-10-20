@@ -97,7 +97,7 @@ public class RenderLogic {
 			
 			AWTSequenceEncoder se = new AWTSequenceEncoder(out, new Rational(videoFps, 1));
 
-			int length = ( videoLength_ms/1000 ) * videoFps;
+			int length = (int)(( (double)videoLength_ms / 1000 ) * videoFps);
 			
 			for (int j = 0; j < length; j++) {
 				
