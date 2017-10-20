@@ -28,3 +28,5 @@ mynote.txt
 /render
 /target
 /.settings
+
+!runnable_jar_test/random_pixel_render.jar

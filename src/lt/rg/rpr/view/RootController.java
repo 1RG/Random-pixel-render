@@ -51,19 +51,64 @@ public class RootController {
 	public void buttonRImage() {
 		System.out.println("Render Image");
 
-		main.renderImage(Integer.parseInt(imgResTFWidth.getText()), Integer.parseInt(imgResTFHeight.getText()));
+		if(imgResTFWidth.getText().isEmpty() || imgResTFHeight.getText().isEmpty()) {
+			AlertWindow.showInfo("Try again", "Empty \"Resolution\" form filled", AlertWindow.WARNING);
+		}else{
+			int w = Integer.parseInt(imgResTFWidth.getText());
+			int h = Integer.parseInt(imgResTFHeight.getText());
+			if(w == 0 || h == 0) {
+				AlertWindow.showInfo("Try again", "Wrong \"Resolution\" form filled", AlertWindow.WARNING);
+			}else {
+				main.renderImage(w, h);
+			}
+		}
 	}
 	
+//	FIXME Empty form event 
 	@FXML
 	public void buttonRVideo() {
 		System.out.println("Render Video");
 
-		main.renderVideo(
-				Integer.parseInt(vidResTFWidth.getText()),
-				Integer.parseInt(vidResTFHeight.getText()),
-				Integer.parseInt(vidFpsTF.getText()),
-				Integer.parseInt(vidLengthTF.getText())
-		);
+		int w = 0;
+		int h = 0;
+		int fps = 0;
+		int length = 0;
+		
+		String errorText = "";
+		
+		if(vidResTFWidth.getText().isEmpty() || vidResTFHeight.getText().isEmpty()) {
+			errorText += "Empty \"Resolution\" form filled \n";
+		}else{
+			w = Integer.parseInt(vidResTFWidth.getText());
+			h = Integer.parseInt(vidResTFHeight.getText());
+			if(w == 0 || h == 0) {
+				errorText += "Wrong \"Resolution\" form filled \n";
+			}
+		}
+		
+		if(vidFpsTF.getText().isEmpty()) {
+			errorText += "Empty \"Frames/second\" form filled \n";
+		}else {
+			fps = Integer.parseInt(vidFpsTF.getText());
+			if(fps == 0) {
+				errorText += "Wrong \"Frames/second\" form filled \n";
+			}
+		}
+		
+		if(vidLengthTF.getText().isEmpty()) {
+			errorText += "Empty \"Length ms\" form filled \n";
+		}else {
+			length = Integer.parseInt(vidLengthTF.getText());
+			if(length == 0) {
+				errorText += "Wrong \"Length ms\" form filled \n";
+			}
+		}
+		
+		if(w != 0 && h != 0 && fps != 0 && length != 0) {
+			main.renderVideo(w, h, fps, length);
+		}else {
+			AlertWindow.showInfo("Try again", errorText.substring(0, errorText.length() - 1), AlertWindow.WARNING);
+		}
 	}
 	
 	@FXML
@@ -90,11 +135,17 @@ public class RootController {
 		ChangeListener<String> changeListener = new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				if(newValue.length() != 0) {
+				if(!newValue.isEmpty()) {
 					try {
 						int i = Integer.parseInt(newValue);
-						if(i < 0) {
-							field.textProperty().set(i*(-1)+"");
+						if(i < 1 ) {
+							if(i < 0) {
+								field.textProperty().set(i*(-1)+"");
+							}else {
+								if(!field.getStyleClass().contains("error_feild")) {
+									field.getStyleClass().add("error_feild");
+								}
+							}
 						}else {
 
 // fix first variable zero input
