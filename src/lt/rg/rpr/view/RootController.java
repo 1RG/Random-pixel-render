@@ -7,6 +7,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import lt.rg.rpr.Main;
+import lt.rg.rpr.model.UtilityMethods;
 
 public class RootController {
 	private Main main;
@@ -36,7 +37,10 @@ public class RootController {
 	private TextField vidFpsTF;
 	
 	@FXML
-	private TextField vidLengthTF;
+	private TextField vidLengthTF_ms;
+	
+	@FXML
+	private TextField vidLengthTF_time;
 	
 	@FXML
 	private Label vidStaL;
@@ -95,10 +99,10 @@ public class RootController {
 			}
 		}
 		
-		if(vidLengthTF.getText().isEmpty()) {
+		if(vidLengthTF_ms.getText().isEmpty()) {
 			errorText += "Empty \"Length ms\" form filled \n";
 		}else {
-			length = Integer.parseInt(vidLengthTF.getText());
+			length = Integer.parseInt(vidLengthTF_ms.getText());
 			if(length == 0) {
 				errorText += "Wrong \"Length ms\" form filled \n";
 			}
@@ -118,7 +122,70 @@ public class RootController {
 		vidResTFWidth.textProperty().addListener(onlyIntFilter(vidResTFWidth));
 		vidResTFHeight.textProperty().addListener(onlyIntFilter(vidResTFHeight));
 		vidFpsTF.textProperty().addListener(onlyIntFilter(vidFpsTF));
-		vidLengthTF.textProperty().addListener(onlyIntFilter(vidLengthTF));
+		vidLengthTF_ms.textProperty().addListener(onlyIntFilter(vidLengthTF_ms));
+		
+		vidLengthTF_ms.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				if(vidLengthTF_ms.isFocused()) {
+					if(!newValue.isEmpty()) {
+						try {
+							int i = Integer.parseInt(newValue);
+							vidLengthTF_time.setText(UtilityMethods.msToTime(i));
+							if(i < 1) {
+								if(!vidLengthTF_time.getStyleClass().contains("error_feild")) {
+									vidLengthTF_time.getStyleClass().add("error_feild");
+								}
+							}else {
+								if(vidLengthTF_time.getStyleClass().contains("error_feild")) {
+									vidLengthTF_time.getStyleClass().remove("error_feild");
+								}
+							}
+						} catch (Exception e) {
+							// Empty
+						}
+					}else {
+						vidLengthTF_time.textProperty().set("0:00:00:000");
+						
+						if(!vidLengthTF_time.getStyleClass().contains("error_feild")) {
+							vidLengthTF_time.getStyleClass().add("error_feild");
+						}
+					}
+				}
+			}
+		});
+		
+		vidLengthTF_time.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				if(vidLengthTF_time.isFocused()) {
+					if(!newValue.equals("::::")) {
+						try {
+							int i = UtilityMethods.timeToMS(newValue);
+							vidLengthTF_ms.setText(i+"");
+							
+							if(i < 1) {
+								if(!vidLengthTF_time.getStyleClass().contains("error_feild")) {
+									vidLengthTF_time.getStyleClass().add("error_feild");
+								}
+							}else {
+								if(vidLengthTF_time.getStyleClass().contains("error_feild")) {
+									vidLengthTF_time.getStyleClass().remove("error_feild");
+								}
+							}
+						} catch (Exception e) {
+							vidLengthTF_time.textProperty().set(oldValue);
+						}
+					}else {
+						vidLengthTF_ms.textProperty().set("0");
+						
+						if(!vidLengthTF_time.getStyleClass().contains("error_feild")) {
+							vidLengthTF_time.getStyleClass().add("error_feild");
+						}
+					}
+				}
+			}
+		});
 	}
 	
 	@FXML
@@ -128,7 +195,7 @@ public class RootController {
 	
 	@FXML
 	private void videoCancel() {
-		main.getImageLogicNote().setCancel(true);
+		main.getVideoLogicNote().setCancel(true);
 	}
 	
 	private ChangeListener<String> onlyIntFilter(TextField field) {
@@ -146,15 +213,7 @@ public class RootController {
 									field.getStyleClass().add("error_feild");
 								}
 							}
-						}else {
-
-// fix first variable zero input
-//							if(!newValue.equals(i+"")) {
-//								Platform.runLater(() -> {
-//									field.textProperty().set(i+""); 
-//				            	});
-//							}
-							
+						}else {						
 							if(field.getStyleClass().contains("error_feild")) {
 								field.getStyleClass().remove("error_feild");
 							}
@@ -186,7 +245,8 @@ public class RootController {
 		vidResTFWidth.setText(width+"");
 		vidResTFHeight.setText(height+"");
 		vidFpsTF.setText(fps+"");
-		vidLengthTF.setText(length+"");
+		vidLengthTF_ms.setText(length+"");
+		vidLengthTF_time.setText(UtilityMethods.msToTime(length));
 	}
 	
 	public void connectGUIElements() {

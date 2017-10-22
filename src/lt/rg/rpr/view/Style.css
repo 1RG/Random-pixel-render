@@ -1,3 +1,23 @@
 .error_feild{
 	-fx-background-color: #ff8080;
 }
+
+/* Static style */
+
+/* https://stackoverflow.com/questions/17288995/how-to-add-border-to-panel-of-javafx */
+.bordered-titled-title {
+  -fx-translate-x:  8;
+  -fx-translate-y: -8;
+  -fx-padding: 0 0 0 4;
+  -fx-background-color: -fx-background;
+}
+.bordered-titled-border {
+  -fx-content-display: top;
+  -fx-border-insets: 2 0 0 0;
+  -fx-border-color: -fx-text-box-border;
+  -fx-border-width: 2;
+  -fx-translate-y:  8;
+}
+.bordered-titled-content {
+  -fx-padding: 18 5 5 5;
+}
