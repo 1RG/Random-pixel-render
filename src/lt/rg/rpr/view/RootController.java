@@ -5,8 +5,11 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import lt.rg.rpr.Main;
+import lt.rg.rpr.model.RenderLogic;
 import lt.rg.rpr.model.UtilityMethods;
 
 public class RootController {
@@ -26,6 +29,13 @@ public class RootController {
 	
 	@FXML
 	private Button imgRenderB;
+	
+	@FXML
+	private ToggleGroup imgPCGroup; 
+	@FXML
+	private RadioButton imgRadioARGB;
+	@FXML
+	private RadioButton imgRadioBW;
 	
 	@FXML
 	private TextField vidResTFWidth;
@@ -52,6 +62,14 @@ public class RootController {
 	private Button vidRenderB;
 	
 	@FXML
+	private ToggleGroup vidPCGroup; 
+	@FXML
+	private RadioButton vidRadioARGB;
+	@FXML
+	private RadioButton vidRadioBW;
+	
+	
+	@FXML
 	public void buttonRImage() {
 		System.out.println("Render Image");
 
@@ -63,7 +81,11 @@ public class RootController {
 			if(w == 0 || h == 0) {
 				AlertWindow.showInfo("Try again", "Wrong \"Resolution\" form filled", AlertWindow.WARNING);
 			}else {
-				main.renderImage(w, h);
+				if(imgPCGroup.getSelectedToggle().equals(imgRadioARGB)) {
+					main.renderImage(w, h, RenderLogic.COLOR_RGB);
+				}else if(imgPCGroup.getSelectedToggle().equals(imgRadioBW)) {
+					main.renderImage(w, h, RenderLogic.COLOR_BW);
+				}
 			}
 		}
 	}
@@ -109,7 +131,11 @@ public class RootController {
 		}
 		
 		if(w != 0 && h != 0 && fps != 0 && length != 0) {
-			main.renderVideo(w, h, fps, length);
+			if(vidPCGroup.getSelectedToggle().equals(vidRadioARGB)) {
+				main.renderVideo(w, h, fps, length, RenderLogic.COLOR_RGB);
+			}else if(vidPCGroup.getSelectedToggle().equals(vidRadioBW)) {
+				main.renderVideo(w, h, fps, length, RenderLogic.COLOR_BW);
+			}
 		}else {
 			AlertWindow.showInfo("Try again", errorText.substring(0, errorText.length() - 1), AlertWindow.WARNING);
 		}
@@ -236,17 +262,31 @@ public class RootController {
 		this.main = main;
 	}
 	
-	public void setImageData(int width, int height) {
+	public void setImageData(int width, int height, int color) {
 		imgResTFWidth.setText(width+"");
 		imgResTFHeight.setText(height+"");
+		
+		//Set RadioButton
+		if(color == RenderLogic.COLOR_RGB) {
+			imgPCGroup.selectToggle(imgRadioARGB);
+		}else{
+			imgPCGroup.selectToggle(imgRadioBW);
+		}
+		
 	}
 	
-	public void setVideoData(int width, int height, int fps, int length) {
+	public void setVideoData(int width, int height, int fps, int length, int color) {
 		vidResTFWidth.setText(width+"");
 		vidResTFHeight.setText(height+"");
 		vidFpsTF.setText(fps+"");
 		vidLengthTF_ms.setText(length+"");
 		vidLengthTF_time.setText(UtilityMethods.msToTime(length));
+		
+		if(color == RenderLogic.COLOR_RGB) {
+			vidPCGroup.selectToggle(vidRadioARGB);
+		}else{
+			vidPCGroup.selectToggle(vidRadioBW);
+		}
 	}
 	
 	public void connectGUIElements() {

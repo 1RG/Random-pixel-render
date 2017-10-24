@@ -12,13 +12,19 @@ import org.jcodec.common.io.SeekableByteChannel;
 import org.jcodec.common.model.Rational;
 
 public class RenderLogic {
+	
+	public static int COLOR_RGB = 0;
+	public static int COLOR_BW = 1;
+	
 	private int imageWidth = 100;
 	private int imageHeight = 100;
+	private int imageColor = 1;
 	
 	private int videoWidth = 100;
 	private int videoHeight = 100;
 	private int videoFps = 30;
 	private int videoLength_ms = 7000;
+	private int videoColor = 1;
 	
 	public void createImage(LogicNote logicNote) {
 		//Start
@@ -36,12 +42,20 @@ public class RenderLogic {
 			long start = System.currentTimeMillis();
 			
 			for (int x = 0; x < imageWidth; x++) {
-				int a = (int)(Math.random()*256);	//alpha
-				int r = a;//(int)(Math.random()*256);	//red
-				int g = a;//(int)(Math.random()*256);	//green
-				int b = a;//(int)(Math.random()*256);	//blue
+				int r;
+				int g;
+				int b;
+				
+				if(imageColor == 0) {
+					r = (int)(Math.random()*256);	//red
+					g = (int)(Math.random()*256);	//green
+					b = (int)(Math.random()*256);	//blue
+				}else {
+					r = g = b = (int)(Math.random()*256);
+				}
 				
 				if(usAlpha) {
+					int a = (int)(Math.random()*256);	//alpha
 					img.setRGB(x, y, new Color(r, g, b, a).getRGB());
 				}else {
 					img.setRGB(x, y, new Color(r, g, b).getRGB());
@@ -105,7 +119,6 @@ public class RenderLogic {
 				long start = System.currentTimeMillis();
 				
 				se.encodeImage(getImage());
-//				se.encodeImage(getImageX2());
 				
 				// Time
 				long end = System.currentTimeMillis() - start;
@@ -143,6 +156,8 @@ public class RenderLogic {
 		logicNote.display("Done");
 		logicNote.displayAlert();
 		logicNote.runing(false);
+		
+//		testVideoSupport();
 	}
 	
 	private BufferedImage getImage() {
@@ -150,38 +165,31 @@ public class RenderLogic {
 		
 		for (int y = 0; y < videoHeight; y++) {
 			for (int x = 0; x < videoWidth; x++) {
-				int a = (int)(Math.random()*256);
-
-				img.setRGB(x, y, new Color(a, a, a).getRGB());
+				int r;
+				int g;
+				int b;
+				
+				if(videoColor == 0) {
+					r = (int)(Math.random()*256);
+					g = (int)(Math.random()*256);
+					b = (int)(Math.random()*256);
+				}else {
+					r = g = b = (int)(Math.random()*256);
+				}
+				
+				img.setRGB(x, y, new Color(r, g, b).getRGB());
 			}
 		}
 		
 		return img;
 	}
-	
-//	private BufferedImage getImageX2() {
-//		BufferedImage img = new BufferedImage(videoWidth*2, videoHeight*2, BufferedImage.TYPE_INT_RGB);
-//		
-//		for (int y = 0; y < videoHeight*2; y+=2) {
-//			for (int x = 0; x < videoWidth*2; x+=2) {
-//				int a = (int)(Math.random()*256);
-//
-//				img.setRGB(x, y, new Color(a, a, a).getRGB());
-//				img.setRGB(x, y+1, new Color(a, a, a).getRGB());
-//				img.setRGB(x+1, y, new Color(a, a, a).getRGB());
-//				img.setRGB(x+1, y+1, new Color(a, a, a).getRGB());
-//			}
-//		}
-//		
-//		return img;
-//	}
-	
+
 	public void testVideoSupport() {
 		for (int i = 1; i <= 1000; i++) {
 			videoWidth = videoHeight = i;
 			SeekableByteChannel out = null;
 			try {
-				out = NIOUtils.writableFileChannel("render/video.mp4");
+				out = NIOUtils.writableFileChannel("render/support_test_video.mp4");
 				AWTSequenceEncoder se = new AWTSequenceEncoder(out, new Rational(1, 1));
 				se.encodeImage(getImage());
 				se.finish();
@@ -192,6 +200,8 @@ public class RenderLogic {
 				NIOUtils.closeQuietly(out);
 			}
 		}
+		
+		System.out.println("Support test done");
 	}
 	
 	private void checkRenderFolder() {
@@ -215,6 +225,14 @@ public class RenderLogic {
 
 	public void setImageHeight(int height) {
 		this.imageHeight = height;
+	}
+
+	public int getImageColor() {
+		return imageColor;
+	}
+
+	public void setImageColor(int imageColor) {
+		this.imageColor = imageColor;
 	}
 
 	public int getVideoWidth() {
@@ -247,5 +265,13 @@ public class RenderLogic {
 
 	public void setVideoLength_ms(int length) {
 		this.videoLength_ms = length;
+	}
+
+	public int getVideoColor() {
+		return videoColor;
+	}
+
+	public void setVideoColor(int videoColor) {
+		this.videoColor = videoColor;
 	}	
 }

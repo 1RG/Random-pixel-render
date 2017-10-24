@@ -3,9 +3,11 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -20,7 +22,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="664.0">
                      <children>
-                        <VBox AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="15.0">
+                        <VBox prefWidth="105.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="15.0">
                            <children>
                               <Label text="Resolution:" />
                               <HBox>
@@ -39,6 +41,17 @@
                               <Button fx:id="imgRenderB" mnemonicParsing="false" onAction="#buttonRImage" prefHeight="25.0" prefWidth="65.0" text="Render" />
                           </buttons>
                         </ButtonBar>
+                        <VBox layoutX="123.0" layoutY="15.0" AnchorPane.leftAnchor="138.0" AnchorPane.topAnchor="15.0">
+                           <children>
+                              <Label text="Pixel color" />
+                              <RadioButton fx:id="imgRadioARGB" mnemonicParsing="false" text="All RGB">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="imgPCGroup" />
+                                 </toggleGroup>
+                              </RadioButton>
+                              <RadioButton fx:id="imgRadioBW" mnemonicParsing="false" text="Black &amp; White" toggleGroup="$imgPCGroup" />
+                           </children>
+                        </VBox>
                      </children>
                   </AnchorPane>
             </content>
@@ -81,6 +94,17 @@
                               <Button fx:id="vidRenderB" mnemonicParsing="false" onAction="#buttonRVideo" prefHeight="25.0" prefWidth="65.0" text="Render" />
                           </buttons>
                         </ButtonBar>
+                        <VBox layoutX="120.0" layoutY="15.0" AnchorPane.leftAnchor="138.0" AnchorPane.topAnchor="15.0">
+                           <children>
+                              <Label text="Pixel color" />
+                              <RadioButton fx:id="vidRadioARGB" mnemonicParsing="false" text="All RGB">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="vidPCGroup" />
+                                 </toggleGroup>
+                              </RadioButton>
+                              <RadioButton fx:id="vidRadioBW" mnemonicParsing="false" text="Black &amp; White" toggleGroup="$vidPCGroup" />
+                           </children>
+                        </VBox>
                      </children>
                   </AnchorPane>
             </content>

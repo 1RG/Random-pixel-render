@@ -6,8 +6,8 @@
 
 /* https://stackoverflow.com/questions/17288995/how-to-add-border-to-panel-of-javafx */
 .bordered-titled-title {
-  -fx-translate-x:  8;
-  -fx-translate-y: -8;
+  -fx-translate-x:  7;
+  -fx-translate-y: -7;
   -fx-padding: 0 0 0 4;
   -fx-background-color: -fx-background;
 }
