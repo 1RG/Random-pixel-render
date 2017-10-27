@@ -28,4 +28,4 @@ hs_err_pid*
 /target
 /.settings
 
-!runnable_jar_test/random_pixel_render.jar
+!runnable_jar_test/random_pixel_render_win32-64.zip
