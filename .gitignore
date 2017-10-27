@@ -23,7 +23,6 @@ hs_err_pid*
 
 # custom
 .project
-mynote.txt
 .classpath
 /render
 /target

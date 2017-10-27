@@ -1,37 +1,27 @@
 package lt.rg.rpr.model;
 
 public class UtilityMethods {
-	static public String msToTime(int ms) {
-		int ml = ms % 1000;
-		int temp = ms / 1000; 
-		int sc = temp % 60;
-		int m = (temp / 60) % 60;
-		int h = temp / 3600;
+	static public String sToTime(int s) {
+		int sc = s % 60;
+		int m = (s / 60) % 60;
+		int h = s / 3600;
 		
-		return h+":"+addNero(m, false)+":"+addNero(sc, false)+":"+ addNero(ml, true);
+		return h+":"+addNero(m)+":"+addNero(sc);
 	}
 	
-	private static String addNero(int x, boolean isMS) {
+	private static String addNero(int x) {
 		String s;
-		if(isMS) {
-			if(x < 10) {
-				s = "00"+x;
-			}else if(x < 100){
-				s = "0"+x;
-			}else{
-				s = ""+x;
-			}
-		}else {
-			if(x < 10) {
-				s = "0"+x;
-			}else{
-				s = ""+x;
-			}
+		
+		if(x < 10) {
+			s = "0"+x;
+		}else{
+			s = ""+x;
 		}
+		
 		return s;
 	}
 	
-	public static int timeToMS(String time) {
+	public static int timeToS(String time) {
 		int n = 0;
 		
 		String[] ta =  time.split(":",-1);
@@ -42,10 +32,9 @@ public class UtilityMethods {
 			}
 		}
 		
-		n += Integer.parseInt(ta[0]) * 3600000;
-		n += Integer.parseInt(ta[1]) * 60000;
-		n += Integer.parseInt(ta[2]) * 1000;
-		n += Integer.parseInt(ta[3]);
+		n += Integer.parseInt(ta[0]) * 3600;
+		n += Integer.parseInt(ta[1]) * 60;
+		n += Integer.parseInt(ta[2]);
 		
 		return n;
 	}

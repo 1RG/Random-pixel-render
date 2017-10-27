@@ -6,10 +6,16 @@ import java.io.File;
 
 import javax.imageio.ImageIO;
 
-import org.jcodec.api.awt.AWTSequenceEncoder;
-import org.jcodec.common.io.NIOUtils;
-import org.jcodec.common.io.SeekableByteChannel;
-import org.jcodec.common.model.Rational;
+import io.humble.video.Codec;
+import io.humble.video.Encoder;
+import io.humble.video.MediaPacket;
+import io.humble.video.MediaPicture;
+import io.humble.video.Muxer;
+import io.humble.video.MuxerFormat;
+import io.humble.video.PixelFormat;
+import io.humble.video.Rational;
+import io.humble.video.awt.MediaPictureConverter;
+import io.humble.video.awt.MediaPictureConverterFactory;
 
 public class RenderLogic {
 	
@@ -23,7 +29,7 @@ public class RenderLogic {
 	private int videoWidth = 100;
 	private int videoHeight = 100;
 	private int videoFps = 30;
-	private int videoLength_ms = 7000;
+	private int videoLength = 7;
 	private int videoColor = 1;
 	
 	public void createImage(LogicNote logicNote) {
@@ -101,24 +107,68 @@ public class RenderLogic {
 	}
 	
 	public void createVideo(LogicNote logicNote) {
+		String filename = "render/test.mp4";
+		String formatname = "mp4";
+		int duration = videoLength;
+		
 		//Start
 		logicNote.runing(true);
 		
 		checkRenderFolder();
-		SeekableByteChannel out = null;
+		
 		try {
-			 out = NIOUtils.writableFileChannel("render/video.mp4");
+			logicNote.display("Rendering...");
 			
-			AWTSequenceEncoder se = new AWTSequenceEncoder(out, new Rational(videoFps, 1));
+			Muxer muxer = Muxer.make(filename, null, formatname);
+			
+			MuxerFormat format = muxer.getFormat();
+			Codec codec = Codec.findEncodingCodec(format.getDefaultVideoCodecId());
+			
+			Encoder encoder = Encoder.make(codec);
 
-			int length = (int)(( (double)videoLength_ms / 1000 ) * videoFps);
+			Rational framerate = Rational.make(1, videoFps);
 			
-			for (int j = 0; j < length; j++) {
-				
+			encoder.setWidth(videoWidth);
+			encoder.setHeight(videoHeight);
+			PixelFormat.Type pixelformat = PixelFormat.Type.PIX_FMT_YUV420P;
+			encoder.setPixelFormat(pixelformat);
+			encoder.setTimeBase(framerate);
+			
+			if (format.getFlag(MuxerFormat.Flag.GLOBAL_HEADER)) {
+				encoder.setFlag(Encoder.Flag.FLAG_GLOBAL_HEADER, true);
+			}
+			
+			encoder.open(null, null);
+			
+			muxer.addNewStream(encoder);
+			
+			muxer.open(null, null);
+			
+			MediaPictureConverter converter = null;
+			MediaPicture picture = MediaPicture.make(videoWidth, videoHeight, pixelformat);
+			picture.setTimeBase(framerate);
+			
+			MediaPacket packet = MediaPacket.make();
+			
+			int length = (int)(duration / framerate.getDouble());
+			
+			for (int i = 0; i < length; i++) {
 				// Time			
 				long start = System.currentTimeMillis();
 				
-				se.encodeImage(getImage());
+				BufferedImage image = getImage();
+				
+				if (converter == null) {
+					converter = MediaPictureConverterFactory.createConverter(image, picture);
+				}
+				converter.toPicture(picture, image, i);
+				
+				do {
+					encoder.encode(packet, picture);
+					if (packet.isComplete()) {
+						muxer.write(packet, false);
+					}
+				} while (packet.isComplete());
 				
 				// Time
 				long end = System.currentTimeMillis() - start;
@@ -130,25 +180,29 @@ public class RenderLogic {
 					logicNote.runing(false);
 					logicNote.setCancel(false);
 					System.out.println("Loop Cancel");
-					se.finish();
-					NIOUtils.closeQuietly(out);
+					muxer.close();
 					return;
 				}else {
 					if(end > 0) {
 						// Time
-						logicNote.display("Time left: "+  (end + end*(length - j))/1000l +"s");
+						logicNote.display("Time left: "+  (end + end*(length - i))/1000l +"s");
 					}
 				}
 			}
 			
-			logicNote.display("Wraiting file...");
+			logicNote.display("Wraiting cache...");
 			
-			se.finish();
-		} catch (Exception e) {
+			do {
+				encoder.encode(packet, null);
+				if (packet.isComplete()) {
+					muxer.write(packet, false);
+				}
+			} while (packet.isComplete());
+			
+			muxer.close();
+		}catch (Exception e) {
 			System.out.println(e);
 			logicNote.setStatus(e);
-		}finally {
-			NIOUtils.closeQuietly(out);
 		}
 		
 		//End
@@ -156,12 +210,10 @@ public class RenderLogic {
 		logicNote.display("Done");
 		logicNote.displayAlert();
 		logicNote.runing(false);
-		
-//		testVideoSupport();
 	}
 	
 	private BufferedImage getImage() {
-		BufferedImage img = new BufferedImage(videoWidth, videoHeight, BufferedImage.TYPE_INT_RGB);
+		BufferedImage img = new BufferedImage(videoWidth, videoHeight, BufferedImage.TYPE_3BYTE_BGR);
 		
 		for (int y = 0; y < videoHeight; y++) {
 			for (int x = 0; x < videoWidth; x++) {
@@ -182,26 +234,6 @@ public class RenderLogic {
 		}
 		
 		return img;
-	}
-
-	public void testVideoSupport() {
-		for (int i = 1; i <= 1000; i++) {
-			videoWidth = videoHeight = i;
-			SeekableByteChannel out = null;
-			try {
-				out = NIOUtils.writableFileChannel("render/support_test_video.mp4");
-				AWTSequenceEncoder se = new AWTSequenceEncoder(out, new Rational(1, 1));
-				se.encodeImage(getImage());
-				se.finish();
-				System.out.println("OK: "+ videoWidth + "x"+ videoHeight);
-			} catch (Exception e) {
-//					System.out.println("FAIL: "+ width + "x"+ height);
-			} finally {
-				NIOUtils.closeQuietly(out);
-			}
-		}
-		
-		System.out.println("Support test done");
 	}
 	
 	private void checkRenderFolder() {
@@ -259,12 +291,12 @@ public class RenderLogic {
 		this.videoFps = fps;
 	}
 
-	public int getVideoLength_ms() {
-		return videoLength_ms;
+	public int getVideoLength() {
+		return videoLength;
 	}
 
-	public void setVideoLength_ms(int length) {
-		this.videoLength_ms = length;
+	public void setVideoLength(int length) {
+		this.videoLength = length;
 	}
 
 	public int getVideoColor() {

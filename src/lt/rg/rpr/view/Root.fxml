@@ -77,8 +77,8 @@
                                  <children>
                                     <VBox prefHeight="107.0" prefWidth="100.0" styleClass="bordered-titled-content" stylesheets="@Style.css">
                                        <children>
-                                          <Label text="Millisecond" />
-                                          <TextField fx:id="vidLengthTF_ms" stylesheets="@Style.css" />
+                                          <Label text="Seconds" />
+                                          <TextField fx:id="vidLengthTF" stylesheets="@Style.css" />
                                           <Label text="Time" />
                                           <TextField fx:id="vidLengthTF_time" stylesheets="@Style.css" />
                                        </children>

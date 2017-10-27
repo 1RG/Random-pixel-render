@@ -54,7 +54,7 @@ public class Main extends Application{
 			RootController rootController = loader.getController();
 			rootController.setMain(this);
 			rootController.setImageData(renderLogic.getImageWidth(), renderLogic.getImageHeight(), renderLogic.getImageColor());
-			rootController.setVideoData(renderLogic.getVideoWidth(), renderLogic.getVideoHeight(), renderLogic.getVideoFps(), renderLogic.getVideoLength_ms(), renderLogic.getImageColor());
+			rootController.setVideoData(renderLogic.getVideoWidth(), renderLogic.getVideoHeight(), renderLogic.getVideoFps(), renderLogic.getVideoLength(), renderLogic.getImageColor());
 			rootController.connectGUIElements();
 			
 			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -108,18 +108,16 @@ public class Main extends Application{
 		thread.start();
 	}
 
-	//TODO add color selection
 	public void renderVideo(int width, int height, int fps, int length, int color) {
 		renderLogic.setVideoWidth(width);
 		renderLogic.setVideoHeight(height);
 		renderLogic.setVideoFps(fps);
-		renderLogic.setVideoLength_ms(length);
+		renderLogic.setVideoLength(length);
 		renderLogic.setVideoColor(color);
 		
 		Thread thread = new Thread(new Runnable() {		
 			@Override
-			public void run() {
-				
+			public void run() {				
 				renderLogic.createVideo(videoLogicNote);
 			}
 		});

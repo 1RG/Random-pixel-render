@@ -47,7 +47,7 @@ public class RootController {
 	private TextField vidFpsTF;
 	
 	@FXML
-	private TextField vidLengthTF_ms;
+	private TextField vidLengthTF;
 	
 	@FXML
 	private TextField vidLengthTF_time;
@@ -90,7 +90,6 @@ public class RootController {
 		}
 	}
 	
-//	FIXME Empty form event 
 	@FXML
 	public void buttonRVideo() {
 		System.out.println("Render Video");
@@ -121,12 +120,12 @@ public class RootController {
 			}
 		}
 		
-		if(vidLengthTF_ms.getText().isEmpty()) {
-			errorText += "Empty \"Length ms\" form filled \n";
+		if(vidLengthTF.getText().isEmpty()) {
+			errorText += "Empty \"Length\" form filled \n";
 		}else {
-			length = Integer.parseInt(vidLengthTF_ms.getText());
+			length = Integer.parseInt(vidLengthTF.getText());
 			if(length == 0) {
-				errorText += "Wrong \"Length ms\" form filled \n";
+				errorText += "Wrong \"Length\" form filled \n";
 			}
 		}
 		
@@ -148,16 +147,16 @@ public class RootController {
 		vidResTFWidth.textProperty().addListener(onlyIntFilter(vidResTFWidth));
 		vidResTFHeight.textProperty().addListener(onlyIntFilter(vidResTFHeight));
 		vidFpsTF.textProperty().addListener(onlyIntFilter(vidFpsTF));
-		vidLengthTF_ms.textProperty().addListener(onlyIntFilter(vidLengthTF_ms));
+		vidLengthTF.textProperty().addListener(onlyIntFilter(vidLengthTF));
 		
-		vidLengthTF_ms.textProperty().addListener(new ChangeListener<String>() {
+		vidLengthTF.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				if(vidLengthTF_ms.isFocused()) {
+				if(vidLengthTF.isFocused()) {
 					if(!newValue.isEmpty()) {
 						try {
 							int i = Integer.parseInt(newValue);
-							vidLengthTF_time.setText(UtilityMethods.msToTime(i));
+							vidLengthTF_time.setText(UtilityMethods.sToTime(i));
 							if(i < 1) {
 								if(!vidLengthTF_time.getStyleClass().contains("error_feild")) {
 									vidLengthTF_time.getStyleClass().add("error_feild");
@@ -171,7 +170,7 @@ public class RootController {
 							// Empty
 						}
 					}else {
-						vidLengthTF_time.textProperty().set("0:00:00:000");
+						vidLengthTF_time.textProperty().set("0:00:00");
 						
 						if(!vidLengthTF_time.getStyleClass().contains("error_feild")) {
 							vidLengthTF_time.getStyleClass().add("error_feild");
@@ -185,10 +184,10 @@ public class RootController {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				if(vidLengthTF_time.isFocused()) {
-					if(!newValue.equals("::::")) {
+					if(!newValue.equals(":::")) {
 						try {
-							int i = UtilityMethods.timeToMS(newValue);
-							vidLengthTF_ms.setText(i+"");
+							int i = UtilityMethods.timeToS(newValue);
+							vidLengthTF.setText(i+"");
 							
 							if(i < 1) {
 								if(!vidLengthTF_time.getStyleClass().contains("error_feild")) {
@@ -203,7 +202,7 @@ public class RootController {
 							vidLengthTF_time.textProperty().set(oldValue);
 						}
 					}else {
-						vidLengthTF_ms.textProperty().set("0");
+						vidLengthTF.textProperty().set("0");
 						
 						if(!vidLengthTF_time.getStyleClass().contains("error_feild")) {
 							vidLengthTF_time.getStyleClass().add("error_feild");
@@ -279,8 +278,8 @@ public class RootController {
 		vidResTFWidth.setText(width+"");
 		vidResTFHeight.setText(height+"");
 		vidFpsTF.setText(fps+"");
-		vidLengthTF_ms.setText(length+"");
-		vidLengthTF_time.setText(UtilityMethods.msToTime(length));
+		vidLengthTF.setText(length+"");
+		vidLengthTF_time.setText(UtilityMethods.sToTime(length));
 		
 		if(color == RenderLogic.COLOR_RGB) {
 			vidPCGroup.selectToggle(vidRadioARGB);
