@@ -34,7 +34,7 @@
                               </HBox>
                            </children>
                         </VBox>
-                        <Label fx:id="imgStaL" layoutX="33.0" layoutY="432.0" prefHeight="17.0" prefWidth="100.0" text="Ready" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" />
+                        <Label fx:id="imgStaL" layoutX="33.0" layoutY="432.0" prefHeight="17.0" prefWidth="150.0" text="Ready" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" />
                         <ButtonBar buttonMinWidth="65.0" layoutX="202.0" layoutY="342.0" prefHeight="25.0" prefWidth="150.0" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0">
                           <buttons>
                               <Button fx:id="imgCancelB" disable="true" mnemonicParsing="false" onAction="#imageCancel" prefWidth="65.0" text="Cancel" />
@@ -60,7 +60,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <Label fx:id="vidStaL" prefHeight="17.0" prefWidth="100.0" text="Ready" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" />
+                        <Label fx:id="vidStaL" prefHeight="17.0" prefWidth="150.0" text="Ready" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" />
                         <VBox prefHeight="264.0" prefWidth="105.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="15.0">
                            <children>
                               <Label text="Resolution:" />

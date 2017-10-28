@@ -101,8 +101,7 @@ public class Main extends Application{
 		Thread thread = new Thread(new Runnable() {		
 			@Override
 			public void run() {
-				
-				renderLogic.createImage(imageLogicNote); 
+				renderLogic.createImage(imageLogicNote);
 			}
 		});
 		thread.start();
@@ -117,7 +116,8 @@ public class Main extends Application{
 		
 		Thread thread = new Thread(new Runnable() {		
 			@Override
-			public void run() {				
+			public void run() {
+				
 				renderLogic.createVideo(videoLogicNote);
 			}
 		});

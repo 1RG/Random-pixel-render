@@ -39,65 +39,74 @@ public class RenderLogic {
 		String format = "png";
 		boolean usAlpha = false;
 		
-		int imageType = usAlpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB;
-		BufferedImage img = new BufferedImage(imageWidth, imageHeight, imageType);
-		
-		for (int y = 0; y < imageHeight; y++) {
-			
-			// Time			
-			long start = System.currentTimeMillis();
-			
-			for (int x = 0; x < imageWidth; x++) {
-				int r;
-				int g;
-				int b;
-				
-				if(imageColor == 0) {
-					r = (int)(Math.random()*256);	//red
-					g = (int)(Math.random()*256);	//green
-					b = (int)(Math.random()*256);	//blue
-				}else {
-					r = g = b = (int)(Math.random()*256);
-				}
-				
-				if(usAlpha) {
-					int a = (int)(Math.random()*256);	//alpha
-					img.setRGB(x, y, new Color(r, g, b, a).getRGB());
-				}else {
-					img.setRGB(x, y, new Color(r, g, b).getRGB());
-				}
-			}
-			
-			// Time
-			long end = System.currentTimeMillis() - start;
-			
-			if(logicNote.isCancel()) {
-				
-				//On Cancel
-				logicNote.display("Cancel");
-				logicNote.runing(false);
-				logicNote.setCancel(false);
-				System.out.println("Loop Cancel");
-				return;
-			}else {
-				if(end > 0) {
-					// Time
-					logicNote.display("Time left: "+  (end + end*(imageHeight - y))/1000l +"s");
-				}
-			}
-		}
-		
 		try {
-			checkRenderFolder();
-			File f = new File("render/image." + format);
 			
-			logicNote.display("Wraiting file...");
+			int imageType = usAlpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_3BYTE_BGR;
+			BufferedImage img = new BufferedImage(imageWidth, imageHeight, imageType);
 			
-			ImageIO.write(img, format, f);
+			for (int y = 0; y < imageHeight; y++) {
+				
+				// Time			
+				long start = System.currentTimeMillis();
+				
+				for (int x = 0; x < imageWidth; x++) {
+					int r;
+					int g;
+					int b;
+					
+					if(imageColor == 0) {
+						r = (int)(Math.random()*256);	//red
+						g = (int)(Math.random()*256);	//green
+						b = (int)(Math.random()*256);	//blue
+					}else {
+						r = g = b = (int)(Math.random()*256);
+					}
+					
+					if(usAlpha) {
+						int a = (int)(Math.random()*256);	//alpha
+						img.setRGB(x, y, new Color(r, g, b, a).getRGB());
+					}else {
+						img.setRGB(x, y, new Color(r, g, b).getRGB());
+					}
+				}
+				
+				// Time
+				long end = System.currentTimeMillis() - start;
+				
+				if(logicNote.isCancel()) {
+					
+					//On Cancel
+					logicNote.display("Cancel");
+					logicNote.runing(false);
+					logicNote.setCancel(false);
+					System.out.println("Loop Cancel");
+					return;
+				}else {
+					if(end > 0) {
+						// Time
+						logicNote.display("Done: "+(100*y/imageHeight)+"% Time left: "+  (end + end*(imageHeight - y))/1000l +"s");
+					}
+				}
+			}
+			
+			try {
+				checkRenderFolder();
+				File f = new File("render/image." + format);
+				
+				logicNote.display("Wraiting file...");
+				
+				ImageIO.write(img, format, f);
+			} catch (Exception e) {
+				System.out.println(e);
+				logicNote.setStatus(e);
+			}
+		
 		} catch (Exception e) {
 			System.out.println(e);
 			logicNote.setStatus(e);
-			
+		} catch (OutOfMemoryError e) {
+			System.out.println(e);
+			logicNote.setStatus(new Exception(e));
 		}
 		
 		//End
@@ -185,7 +194,7 @@ public class RenderLogic {
 				}else {
 					if(end > 0) {
 						// Time
-						logicNote.display("Time left: "+  (end + end*(length - i))/1000l +"s");
+						logicNote.display("Done: "+(100*i/length)+"% Time left: "+  (end + end*(length - i))/1000l +"s");
 					}
 				}
 			}
@@ -200,9 +209,12 @@ public class RenderLogic {
 			} while (packet.isComplete());
 			
 			muxer.close();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println(e);
 			logicNote.setStatus(e);
+		} catch (OutOfMemoryError e) {
+			System.out.println(e);
+			logicNote.setStatus(new Exception(e));
 		}
 		
 		//End
