@@ -1,6 +1,7 @@
 package lt.rg.rpr.model;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -25,12 +26,16 @@ public class RenderLogic {
 	private int imageWidth = 100;
 	private int imageHeight = 100;
 	private int imageColor = 1;
+	private int imagePixelWidth = 1;
+	private int imagePixelHeight = 1;
 	
 	private int videoWidth = 100;
 	private int videoHeight = 100;
 	private int videoFps = 30;
 	private int videoLength = 7;
 	private int videoColor = 1;
+	private int videoPixelWidth = 1;
+	private int videoPixelHeight = 1;
 	
 	public void createImage(LogicNote logicNote) {
 		//Start
@@ -44,47 +49,99 @@ public class RenderLogic {
 			int imageType = usAlpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_3BYTE_BGR;
 			BufferedImage img = new BufferedImage(imageWidth, imageHeight, imageType);
 			
-			for (int y = 0; y < imageHeight; y++) {
-				
-				// Time			
-				long start = System.currentTimeMillis();
-				
-				for (int x = 0; x < imageWidth; x++) {
-					int r;
-					int g;
-					int b;
+			if(imagePixelWidth == 0 && imagePixelHeight == 0) {
+				for (int h = 0; h < imageHeight; h++) {
 					
-					if(imageColor == 0) {
-						r = (int)(Math.random()*256);	//red
-						g = (int)(Math.random()*256);	//green
-						b = (int)(Math.random()*256);	//blue
-					}else {
-						r = g = b = (int)(Math.random()*256);
+					// Time			
+					long start = System.currentTimeMillis();
+					
+					for (int w = 0; w < imageWidth; w++) {
+						int r;
+						int g;
+						int b;
+						
+						if(imageColor == 0) {
+							r = (int)(Math.random()*256);	//red
+							g = (int)(Math.random()*256);	//green
+							b = (int)(Math.random()*256);	//blue
+						}else {
+							r = g = b = (int)(Math.random()*256);
+						}
+						
+					
+						if(usAlpha) {
+							int a = (int)(Math.random()*256);	//alpha
+							img.setRGB(w, h, new Color(r, g, b, a).getRGB());
+						}else {
+							img.setRGB(w, h, new Color(r, g, b).getRGB());
+						}
 					}
 					
-					if(usAlpha) {
-						int a = (int)(Math.random()*256);	//alpha
-						img.setRGB(x, y, new Color(r, g, b, a).getRGB());
+					// Time
+					long end = System.currentTimeMillis() - start;
+					
+					if(logicNote.isCancel()) {
+						
+						//On Cancel
+						logicNote.display("Cancel");
+						logicNote.runing(false);
+						logicNote.setCancel(false);
+						System.out.println("Loop Cancel");
+						return;
 					}else {
-						img.setRGB(x, y, new Color(r, g, b).getRGB());
+						if(end > 0) {
+							// Time
+							logicNote.display("Done: "+(100*h/imageHeight)+"% Time left: "+  (end + end*(imageHeight - h))/1000l +"s");
+						}
 					}
 				}
+			}else {
+				Graphics2D g2d = img.createGraphics();
 				
-				// Time
-				long end = System.currentTimeMillis() - start;
-				
-				if(logicNote.isCancel()) {
+				for (int h = 0; h < imageHeight; h += imagePixelHeight) {
 					
-					//On Cancel
-					logicNote.display("Cancel");
-					logicNote.runing(false);
-					logicNote.setCancel(false);
-					System.out.println("Loop Cancel");
-					return;
-				}else {
-					if(end > 0) {
-						// Time
-						logicNote.display("Done: "+(100*y/imageHeight)+"% Time left: "+  (end + end*(imageHeight - y))/1000l +"s");
+					// Time			
+					long start = System.currentTimeMillis();
+					
+					for (int w = 0; w < imageWidth; w += imagePixelWidth) {
+						int r;
+						int g;
+						int b;
+						
+						if(imageColor == 0) {
+							r = (int)(Math.random()*256);	//red
+							g = (int)(Math.random()*256);	//green
+							b = (int)(Math.random()*256);	//blue
+						}else {
+							r = g = b = (int)(Math.random()*256);
+						}
+						
+						if(usAlpha) {
+							int a = (int)(Math.random()*256);	//alpha
+							g2d.setPaint(new Color(r, g, b, a));
+						}else {
+							g2d.setPaint(new Color(r, g, b));
+						}
+						
+						g2d.fillRect(w, h, imagePixelWidth, imagePixelHeight);
+					}
+					
+					// Time
+					long end = System.currentTimeMillis() - start;
+					
+					if(logicNote.isCancel()) {
+						
+						//On Cancel
+						logicNote.display("Cancel");
+						logicNote.runing(false);
+						logicNote.setCancel(false);
+						System.out.println("Loop Cancel");
+						return;
+					}else {
+						if(end > 0) {
+							// Time
+							logicNote.display("Done: "+(100*h/imageHeight)+"% Time left: "+  (end + end*(imageHeight - h))/1000l +"s");
+						}
 					}
 				}
 			}
@@ -96,6 +153,7 @@ public class RenderLogic {
 				logicNote.display("Wraiting file...");
 				
 				ImageIO.write(img, format, f);
+				img.flush();
 			} catch (Exception e) {
 				System.out.println(e);
 				logicNote.setStatus(e);
@@ -227,21 +285,43 @@ public class RenderLogic {
 	private BufferedImage getImage() {
 		BufferedImage img = new BufferedImage(videoWidth, videoHeight, BufferedImage.TYPE_3BYTE_BGR);
 		
-		for (int y = 0; y < videoHeight; y++) {
-			for (int x = 0; x < videoWidth; x++) {
-				int r;
-				int g;
-				int b;
-				
-				if(videoColor == 0) {
-					r = (int)(Math.random()*256);
-					g = (int)(Math.random()*256);
-					b = (int)(Math.random()*256);
-				}else {
-					r = g = b = (int)(Math.random()*256);
+		if(videoPixelWidth == 0 && videoPixelHeight == 0) {
+			for (int h = 0; h < videoHeight; h++) {
+				for (int w = 0; w < videoWidth; w++) {
+					int r;
+					int g;
+					int b;
+					
+					if(videoColor == 0) {
+						r = (int)(Math.random()*256);
+						g = (int)(Math.random()*256);
+						b = (int)(Math.random()*256);
+					}else {
+						r = g = b = (int)(Math.random()*256);
+					}
+					
+					img.setRGB(w, h, new Color(r, g, b).getRGB());
 				}
-				
-				img.setRGB(x, y, new Color(r, g, b).getRGB());
+			}
+		}else {
+			Graphics2D g2d = img.createGraphics();
+			for (int h = 0; h < videoHeight; h += videoPixelHeight) {
+				for (int w = 0; w < videoWidth; w += videoPixelWidth) {
+					int r;
+					int g;
+					int b;
+					
+					if(videoColor == 0) {
+						r = (int)(Math.random()*256);
+						g = (int)(Math.random()*256);
+						b = (int)(Math.random()*256);
+					}else {
+						r = g = b = (int)(Math.random()*256);
+					}
+					
+					g2d.setPaint(new Color(r, g, b));
+					g2d.fillRect(w, h, videoPixelWidth, videoPixelHeight);
+				}
 			}
 		}
 		
@@ -277,6 +357,22 @@ public class RenderLogic {
 
 	public void setImageColor(int imageColor) {
 		this.imageColor = imageColor;
+	}
+
+	public int getImagePixelWidth() {
+		return imagePixelWidth;
+	}
+
+	public int getImagePixelHeight() {
+		return imagePixelHeight;
+	}
+
+	public void setImagePixelWidth(int width) {
+		this.imagePixelWidth = width;
+	}
+
+	public void setImagePixelHeight(int height) {
+		this.imagePixelHeight = height;
 	}
 
 	public int getVideoWidth() {
@@ -317,5 +413,21 @@ public class RenderLogic {
 
 	public void setVideoColor(int videoColor) {
 		this.videoColor = videoColor;
+	}
+
+	public int getVideoPixelWidth() {
+		return videoPixelWidth;
+	}
+
+	public int getVideoPixelHeight() {
+		return videoPixelHeight;
+	}
+
+	public void setVideoPixelWidth(int videoPixelWidth) {
+		this.videoPixelWidth = videoPixelWidth;
+	}
+
+	public void setVideoPixelHeight(int videoPixelHeight) {
+		this.videoPixelHeight = videoPixelHeight;
 	}	
 }

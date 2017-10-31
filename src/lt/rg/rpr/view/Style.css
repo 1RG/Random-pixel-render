@@ -21,3 +21,7 @@
 .bordered-titled-content {
   -fx-padding: 18 5 5 5;
 }
+
+.pixel-color{
+	-fx-spacing: 5;
+}

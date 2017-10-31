@@ -24,7 +24,7 @@
                      <children>
                         <VBox prefWidth="105.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="15.0">
                            <children>
-                              <Label text="Resolution:" />
+                              <Label text="Resolution" />
                               <HBox>
                                  <children>
                                     <TextField fx:id="imgResTFWidth" prefHeight="25.0" prefWidth="50.0" stylesheets="@Style.css" />
@@ -41,7 +41,7 @@
                               <Button fx:id="imgRenderB" mnemonicParsing="false" onAction="#buttonRImage" prefHeight="25.0" prefWidth="65.0" text="Render" />
                           </buttons>
                         </ButtonBar>
-                        <VBox layoutX="123.0" layoutY="15.0" AnchorPane.leftAnchor="138.0" AnchorPane.topAnchor="15.0">
+                        <VBox layoutX="123.0" layoutY="15.0" styleClass="pixel-color" stylesheets="@Style.css" AnchorPane.leftAnchor="138.0" AnchorPane.topAnchor="15.0">
                            <children>
                               <Label text="Pixel color" />
                               <RadioButton fx:id="imgRadioARGB" mnemonicParsing="false" text="All RGB">
@@ -50,6 +50,18 @@
                                  </toggleGroup>
                               </RadioButton>
                               <RadioButton fx:id="imgRadioBW" mnemonicParsing="false" text="Black &amp; White" toggleGroup="$imgPCGroup" />
+                           </children>
+                        </VBox>
+                        <VBox layoutX="234.0" layoutY="15.0" prefWidth="105.0" AnchorPane.leftAnchor="249.0" AnchorPane.topAnchor="15.0">
+                           <children>
+                              <Label text="Pixel size" />
+                              <HBox>
+                                 <children>
+                                    <TextField fx:id="imgPSWidth" stylesheets="@Style.css" />
+                                    <Label prefHeight="25.0" text="X" />
+                                    <TextField fx:id="imgPSHeight" stylesheets="@Style.css" />
+                                 </children>
+                              </HBox>
                            </children>
                         </VBox>
                      </children>
@@ -63,7 +75,7 @@
                         <Label fx:id="vidStaL" prefHeight="17.0" prefWidth="150.0" text="Ready" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" />
                         <VBox prefHeight="264.0" prefWidth="105.0" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="15.0">
                            <children>
-                              <Label text="Resolution:" />
+                              <Label text="Resolution" />
                               <HBox>
                                  <children>
                                     <TextField fx:id="vidResTFWidth" prefHeight="25.0" prefWidth="50.0" stylesheets="@Style.css" />
@@ -94,7 +106,7 @@
                               <Button fx:id="vidRenderB" mnemonicParsing="false" onAction="#buttonRVideo" prefHeight="25.0" prefWidth="65.0" text="Render" />
                           </buttons>
                         </ButtonBar>
-                        <VBox layoutX="120.0" layoutY="15.0" AnchorPane.leftAnchor="138.0" AnchorPane.topAnchor="15.0">
+                        <VBox layoutX="120.0" layoutY="15.0" styleClass="pixel-color" stylesheets="@Style.css" AnchorPane.leftAnchor="138.0" AnchorPane.topAnchor="15.0">
                            <children>
                               <Label text="Pixel color" />
                               <RadioButton fx:id="vidRadioARGB" mnemonicParsing="false" text="All RGB">
@@ -103,6 +115,18 @@
                                  </toggleGroup>
                               </RadioButton>
                               <RadioButton fx:id="vidRadioBW" mnemonicParsing="false" text="Black &amp; White" toggleGroup="$vidPCGroup" />
+                           </children>
+                        </VBox>
+                        <VBox layoutX="234.0" layoutY="14.0" prefWidth="105.0" AnchorPane.leftAnchor="249.0" AnchorPane.topAnchor="15.0">
+                           <children>
+                              <Label text="Pixel size" />
+                              <HBox>
+                                 <children>
+                                    <TextField fx:id="vidPSWidth" stylesheets="@Style.css" />
+                                    <Label prefHeight="25.0" text="X" />
+                                    <TextField fx:id="vidPSHeight" stylesheets="@Style.css" />
+                                 </children>
+                              </HBox>
                            </children>
                         </VBox>
                      </children>

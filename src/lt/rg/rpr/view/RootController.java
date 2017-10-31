@@ -38,6 +38,12 @@ public class RootController {
 	private RadioButton imgRadioBW;
 	
 	@FXML
+	private TextField imgPSWidth;
+	
+	@FXML
+	private TextField imgPSHeight;
+	
+	@FXML
 	private TextField vidResTFWidth;
 		
 	@FXML
@@ -68,25 +74,51 @@ public class RootController {
 	@FXML
 	private RadioButton vidRadioBW;
 	
+	@FXML
+	private TextField vidPSWidth;
+	
+	@FXML
+	private TextField vidPSHeight;
 	
 	@FXML
 	public void buttonRImage() {
 		System.out.println("Render Image");
 
+		int w = 0;
+		int h = 0;
+		int p_w = 0;
+		int p_h = 0;
+		
+		String errorText = "";
+		
 		if(imgResTFWidth.getText().isEmpty() || imgResTFHeight.getText().isEmpty()) {
-			AlertWindow.showInfo("Try again", "Empty \"Resolution\" form filled", AlertWindow.WARNING);
+			errorText += "Empty \"Resolution\" form filled\n";
 		}else{
-			int w = Integer.parseInt(imgResTFWidth.getText());
-			int h = Integer.parseInt(imgResTFHeight.getText());
+			w = Integer.parseInt(imgResTFWidth.getText());
+			h = Integer.parseInt(imgResTFHeight.getText());
 			if(w == 0 || h == 0) {
-				AlertWindow.showInfo("Try again", "Wrong \"Resolution\" form filled", AlertWindow.WARNING);
-			}else {
-				if(imgPCGroup.getSelectedToggle().equals(imgRadioARGB)) {
-					main.renderImage(w, h, RenderLogic.COLOR_RGB);
-				}else if(imgPCGroup.getSelectedToggle().equals(imgRadioBW)) {
-					main.renderImage(w, h, RenderLogic.COLOR_BW);
-				}
+				errorText += "Wrong \"Resolution\" form filled\n";
 			}
+		}
+		
+		if(imgPSWidth.getText().isEmpty() || imgPSHeight.getText().isEmpty()) {
+			errorText += "Empty \"Pixel size\" form filled \n";
+		}else {
+			p_w = Integer.parseInt(imgPSWidth.getText());
+			p_h = Integer.parseInt(imgPSHeight.getText());
+			if(p_w == 0 || p_h == 0) {
+				errorText += "Wrong \"Pixel size\" form filled \n";
+			}
+		}
+		
+		if(w != 0 && h != 0 && p_w != 0 && p_h != 0) {
+			if(imgPCGroup.getSelectedToggle().equals(imgRadioARGB)) {
+				main.renderImage(w, h, RenderLogic.COLOR_RGB, p_w, p_h);
+			}else if(imgPCGroup.getSelectedToggle().equals(imgRadioBW)) {
+				main.renderImage(w, h, RenderLogic.COLOR_BW, p_w, p_h);
+			}
+		}else {
+			AlertWindow.showInfo("Try again", errorText.substring(0, errorText.length() - 1), AlertWindow.WARNING);
 		}
 	}
 	
@@ -98,6 +130,8 @@ public class RootController {
 		int h = 0;
 		int fps = 0;
 		int length = 0;
+		int p_w = 0;
+		int p_h = 0;
 		
 		String errorText = "";
 		
@@ -129,11 +163,21 @@ public class RootController {
 			}
 		}
 		
-		if(w != 0 && h != 0 && fps != 0 && length != 0) {
+		if(vidPSWidth.getText().isEmpty() || vidPSHeight.getText().isEmpty()) {
+			errorText += "Empty \"Pixel size\" form filled \n";
+		}else {
+			p_w = Integer.parseInt(vidPSWidth.getText());
+			p_h = Integer.parseInt(vidPSHeight.getText());
+			if(p_w == 0 || p_h == 0) {
+				errorText += "Wrong \"Pixel size\" form filled \n";
+			}
+		}
+		
+		if(w != 0 && h != 0 && fps != 0 && length != 0 && p_w != 0 && p_h != 0) {
 			if(vidPCGroup.getSelectedToggle().equals(vidRadioARGB)) {
-				main.renderVideo(w, h, fps, length, RenderLogic.COLOR_RGB);
+				main.renderVideo(w, h, fps, length, RenderLogic.COLOR_RGB, p_w, p_h);
 			}else if(vidPCGroup.getSelectedToggle().equals(vidRadioBW)) {
-				main.renderVideo(w, h, fps, length, RenderLogic.COLOR_BW);
+				main.renderVideo(w, h, fps, length, RenderLogic.COLOR_BW, p_w, p_h);
 			}
 		}else {
 			AlertWindow.showInfo("Try again", errorText.substring(0, errorText.length() - 1), AlertWindow.WARNING);
@@ -144,10 +188,14 @@ public class RootController {
 	private void initialize(){		
 		imgResTFWidth.textProperty().addListener(onlyIntFilter(imgResTFWidth));
 		imgResTFHeight.textProperty().addListener(onlyIntFilter(imgResTFHeight));
+		imgPSWidth.textProperty().addListener(onlyIntFilter(imgPSWidth));
+		imgPSHeight.textProperty().addListener(onlyIntFilter(imgPSHeight));
 		vidResTFWidth.textProperty().addListener(onlyIntFilter(vidResTFWidth));
 		vidResTFHeight.textProperty().addListener(onlyIntFilter(vidResTFHeight));
 		vidFpsTF.textProperty().addListener(onlyIntFilter(vidFpsTF));
 		vidLengthTF.textProperty().addListener(onlyIntFilter(vidLengthTF));
+		vidPSWidth.textProperty().addListener(onlyIntFilter(vidPSWidth));
+		vidPSHeight.textProperty().addListener(onlyIntFilter(vidPSHeight));
 		
 		vidLengthTF.textProperty().addListener(new ChangeListener<String>() {
 			@Override
@@ -261,7 +309,7 @@ public class RootController {
 		this.main = main;
 	}
 	
-	public void setImageData(int width, int height, int color) {
+	public void setImageData(int width, int height, int color, int ps_width, int ps_height) {
 		imgResTFWidth.setText(width+"");
 		imgResTFHeight.setText(height+"");
 		
@@ -272,14 +320,19 @@ public class RootController {
 			imgPCGroup.selectToggle(imgRadioBW);
 		}
 		
+		imgPSWidth.setText(ps_width+"");
+		imgPSHeight.setText(ps_height+"");
+		
 	}
 	
-	public void setVideoData(int width, int height, int fps, int length, int color) {
+	public void setVideoData(int width, int height, int fps, int length, int color, int ps_width, int ps_height) {
 		vidResTFWidth.setText(width+"");
 		vidResTFHeight.setText(height+"");
 		vidFpsTF.setText(fps+"");
 		vidLengthTF.setText(length+"");
 		vidLengthTF_time.setText(UtilityMethods.sToTime(length));
+		vidPSWidth.setText(ps_width+"");
+		vidPSHeight.setText(ps_height+"");
 		
 		if(color == RenderLogic.COLOR_RGB) {
 			vidPCGroup.selectToggle(vidRadioARGB);

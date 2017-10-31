@@ -53,8 +53,8 @@ public class Main extends Application{
 			
 			RootController rootController = loader.getController();
 			rootController.setMain(this);
-			rootController.setImageData(renderLogic.getImageWidth(), renderLogic.getImageHeight(), renderLogic.getImageColor());
-			rootController.setVideoData(renderLogic.getVideoWidth(), renderLogic.getVideoHeight(), renderLogic.getVideoFps(), renderLogic.getVideoLength(), renderLogic.getImageColor());
+			rootController.setImageData(renderLogic.getImageWidth(), renderLogic.getImageHeight(), renderLogic.getImageColor(), renderLogic.getImagePixelWidth(), renderLogic.getImagePixelHeight());
+			rootController.setVideoData(renderLogic.getVideoWidth(), renderLogic.getVideoHeight(), renderLogic.getVideoFps(), renderLogic.getVideoLength(), renderLogic.getImageColor(), renderLogic.getVideoPixelWidth(), renderLogic.getImagePixelHeight());
 			rootController.connectGUIElements();
 			
 			primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -93,10 +93,12 @@ public class Main extends Application{
 		return renderLogic;
 	}
 	
-	public void renderImage(int width, int height, int color) {
+	public void renderImage(int width, int height, int color, int p_width, int p_height) {
 		renderLogic.setImageWidth(width);
 		renderLogic.setImageHeight(height);
 		renderLogic.setImageColor(color);
+		renderLogic.setImagePixelWidth(p_width);
+		renderLogic.setImagePixelHeight(p_height);
 		
 		Thread thread = new Thread(new Runnable() {		
 			@Override
@@ -107,12 +109,14 @@ public class Main extends Application{
 		thread.start();
 	}
 
-	public void renderVideo(int width, int height, int fps, int length, int color) {
+	public void renderVideo(int width, int height, int fps, int length, int color, int p_width, int p_height) {
 		renderLogic.setVideoWidth(width);
 		renderLogic.setVideoHeight(height);
 		renderLogic.setVideoFps(fps);
 		renderLogic.setVideoLength(length);
 		renderLogic.setVideoColor(color);
+		renderLogic.setVideoPixelWidth(p_width);
+		renderLogic.setVideoPixelHeight(p_height);
 		
 		Thread thread = new Thread(new Runnable() {		
 			@Override
