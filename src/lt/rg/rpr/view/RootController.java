@@ -4,6 +4,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -42,6 +43,9 @@ public class RootController {
 	
 	@FXML
 	private TextField imgPSHeight;
+	
+	@FXML
+	private CheckBox imgPCAlphaCB;
 	
 	@FXML
 	private TextField vidResTFWidth;
@@ -113,9 +117,9 @@ public class RootController {
 		
 		if(w != 0 && h != 0 && p_w != 0 && p_h != 0) {
 			if(imgPCGroup.getSelectedToggle().equals(imgRadioARGB)) {
-				main.renderImage(w, h, RenderLogic.COLOR_RGB, p_w, p_h);
+				main.renderImage(w, h, RenderLogic.COLOR_RGB, p_w, p_h, imgPCAlphaCB.isSelected());
 			}else if(imgPCGroup.getSelectedToggle().equals(imgRadioBW)) {
-				main.renderImage(w, h, RenderLogic.COLOR_BW, p_w, p_h);
+				main.renderImage(w, h, RenderLogic.COLOR_BW, p_w, p_h, imgPCAlphaCB.isSelected());
 			}
 		}else {
 			AlertWindow.showInfo("Try again", errorText.substring(0, errorText.length() - 1), AlertWindow.WARNING);
@@ -309,7 +313,7 @@ public class RootController {
 		this.main = main;
 	}
 	
-	public void setImageData(int width, int height, int color, int ps_width, int ps_height) {
+	public void setImageData(int width, int height, int color, int ps_width, int ps_height, boolean pc_alpha) {
 		imgResTFWidth.setText(width+"");
 		imgResTFHeight.setText(height+"");
 		
@@ -322,6 +326,7 @@ public class RootController {
 		
 		imgPSWidth.setText(ps_width+"");
 		imgPSHeight.setText(ps_height+"");
+		imgPCAlphaCB.setSelected(pc_alpha);
 		
 	}
 	
@@ -331,14 +336,15 @@ public class RootController {
 		vidFpsTF.setText(fps+"");
 		vidLengthTF.setText(length+"");
 		vidLengthTF_time.setText(UtilityMethods.sToTime(length));
-		vidPSWidth.setText(ps_width+"");
-		vidPSHeight.setText(ps_height+"");
 		
 		if(color == RenderLogic.COLOR_RGB) {
 			vidPCGroup.selectToggle(vidRadioARGB);
 		}else{
 			vidPCGroup.selectToggle(vidRadioBW);
 		}
+		
+		vidPSWidth.setText(ps_width+"");
+		vidPSHeight.setText(ps_height+"");
 	}
 	
 	public void connectGUIElements() {

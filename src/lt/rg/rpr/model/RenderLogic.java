@@ -28,6 +28,7 @@ public class RenderLogic {
 	private int imageColor = 1;
 	private int imagePixelWidth = 1;
 	private int imagePixelHeight = 1;
+	private boolean imageAlpha = false;
 	
 	private int videoWidth = 100;
 	private int videoHeight = 100;
@@ -42,11 +43,10 @@ public class RenderLogic {
 		logicNote.runing(true);
 
 		String format = "png";
-		boolean usAlpha = false;
-		
+
 		try {
 			
-			int imageType = usAlpha ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_3BYTE_BGR;
+			int imageType = imageAlpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR;
 			BufferedImage img = new BufferedImage(imageWidth, imageHeight, imageType);
 			
 			if(imagePixelWidth == 0 && imagePixelHeight == 0) {
@@ -69,7 +69,7 @@ public class RenderLogic {
 						}
 						
 					
-						if(usAlpha) {
+						if(imageAlpha) {
 							int a = (int)(Math.random()*256);	//alpha
 							img.setRGB(w, h, new Color(r, g, b, a).getRGB());
 						}else {
@@ -100,7 +100,7 @@ public class RenderLogic {
 				
 				for (int h = 0; h < imageHeight; h += imagePixelHeight) {
 					
-					// Time			
+					// Time	
 					long start = System.currentTimeMillis();
 					
 					for (int w = 0; w < imageWidth; w += imagePixelWidth) {
@@ -116,7 +116,7 @@ public class RenderLogic {
 							r = g = b = (int)(Math.random()*256);
 						}
 						
-						if(usAlpha) {
+						if(imageAlpha) {
 							int a = (int)(Math.random()*256);	//alpha
 							g2d.setPaint(new Color(r, g, b, a));
 						}else {
@@ -368,6 +368,14 @@ public class RenderLogic {
 
 	public void setImagePixelHeight(int height) {
 		this.imagePixelHeight = height;
+	}
+
+	public boolean isImageAlpha() {
+		return imageAlpha;
+	}
+
+	public void setImageAlpha(boolean imageAlpha) {
+		this.imageAlpha = imageAlpha;
 	}
 
 	public int getVideoWidth() {

@@ -53,7 +53,7 @@ public class Main extends Application{
 			
 			RootController rootController = loader.getController();
 			rootController.setMain(this);
-			rootController.setImageData(renderLogic.getImageWidth(), renderLogic.getImageHeight(), renderLogic.getImageColor(), renderLogic.getImagePixelWidth(), renderLogic.getImagePixelHeight());
+			rootController.setImageData(renderLogic.getImageWidth(), renderLogic.getImageHeight(), renderLogic.getImageColor(), renderLogic.getImagePixelWidth(), renderLogic.getImagePixelHeight(), renderLogic.isImageAlpha());
 			rootController.setVideoData(renderLogic.getVideoWidth(), renderLogic.getVideoHeight(), renderLogic.getVideoFps(), renderLogic.getVideoLength(), renderLogic.getImageColor(), renderLogic.getVideoPixelWidth(), renderLogic.getImagePixelHeight());
 			rootController.connectGUIElements();
 			
@@ -93,12 +93,13 @@ public class Main extends Application{
 		return renderLogic;
 	}
 	
-	public void renderImage(int width, int height, int color, int p_width, int p_height) {
+	public void renderImage(int width, int height, int color, int p_width, int p_height, boolean alpha) {
 		renderLogic.setImageWidth(width);
 		renderLogic.setImageHeight(height);
 		renderLogic.setImageColor(color);
 		renderLogic.setImagePixelWidth(p_width);
 		renderLogic.setImagePixelHeight(p_height);
+		renderLogic.setImageAlpha(alpha);
 		
 		Thread thread = new Thread(new Runnable() {		
 			@Override
