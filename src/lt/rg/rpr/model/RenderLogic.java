@@ -144,6 +144,7 @@ public class RenderLogic {
 						}
 					}
 				}
+				g2d.dispose();
 			}
 			
 			try {
@@ -288,44 +289,38 @@ public class RenderLogic {
 		if(videoPixelWidth == 0 && videoPixelHeight == 0) {
 			for (int h = 0; h < videoHeight; h++) {
 				for (int w = 0; w < videoWidth; w++) {
-					int r;
-					int g;
-					int b;
-					
-					if(videoColor == 0) {
-						r = (int)(Math.random()*256);
-						g = (int)(Math.random()*256);
-						b = (int)(Math.random()*256);
-					}else {
-						r = g = b = (int)(Math.random()*256);
-					}
-					
-					img.setRGB(w, h, new Color(r, g, b).getRGB());
+					img.setRGB(w, h, getRandomColor().getRGB());
 				}
 			}
 		}else {
 			Graphics2D g2d = img.createGraphics();
 			for (int h = 0; h < videoHeight; h += videoPixelHeight) {
 				for (int w = 0; w < videoWidth; w += videoPixelWidth) {
-					int r;
-					int g;
-					int b;
-					
-					if(videoColor == 0) {
-						r = (int)(Math.random()*256);
-						g = (int)(Math.random()*256);
-						b = (int)(Math.random()*256);
-					}else {
-						r = g = b = (int)(Math.random()*256);
-					}
-					
-					g2d.setPaint(new Color(r, g, b));
+					g2d.setPaint(getRandomColor());
 					g2d.fillRect(w, h, videoPixelWidth, videoPixelHeight);
 				}
 			}
+			
+			g2d.dispose();
 		}
 		
 		return img;
+	}
+	
+	private Color getRandomColor() {
+		int r;
+		int g;
+		int b;
+		
+		if(videoColor == 0) {
+			r = (int)(Math.random()*256);
+			g = (int)(Math.random()*256);
+			b = (int)(Math.random()*256);
+		}else {
+			r = g = b = (int)(Math.random()*256);
+		}
+		
+		return new Color(r, g, b);
 	}
 	
 	private void checkRenderFolder() {
