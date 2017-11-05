@@ -58,15 +58,15 @@ public class LogicNote {
 		});
 	}
 	
-	public void displayAlert() {
+	public void displayAlert(String tipe) {
 		Platform.runLater(new Runnable() {
 			
 			@Override
 			public void run() {
 				if(status) {		
-					AlertWindow.showInfo("Success", "Done", AlertWindow.INFORMATION);
+					AlertWindow.showInfo("Success", tipe + " Done", AlertWindow.INFORMATION);
 				}else {
-					AlertWindow.showInfo("Failure", "Error "+ exception, AlertWindow.ERROR);
+					AlertWindow.showInfo("Failure", tipe + " Error "+ exception, AlertWindow.ERROR);
 				}
 			}
 		});

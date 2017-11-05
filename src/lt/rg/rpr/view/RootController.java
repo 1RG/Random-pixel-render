@@ -37,6 +37,8 @@ public class RootController {
 	private RadioButton imgRadioARGB;
 	@FXML
 	private RadioButton imgRadioBW;
+	@FXML
+	private RadioButton imgRadioCustom;
 	
 	@FXML
 	private TextField imgPSWidth;
@@ -77,6 +79,8 @@ public class RootController {
 	private RadioButton vidRadioARGB;
 	@FXML
 	private RadioButton vidRadioBW;
+	@FXML
+	private RadioButton vidRadioCustom;
 	
 	@FXML
 	private TextField vidPSWidth;
@@ -92,6 +96,7 @@ public class RootController {
 		int h = 0;
 		int p_w = 0;
 		int p_h = 0;
+		boolean cpc_ok = true;
 		
 		String errorText = "";
 		
@@ -115,11 +120,18 @@ public class RootController {
 			}
 		}
 		
-		if(w != 0 && h != 0 && p_w != 0 && p_h != 0) {
+		if(main.getRenderLogic().getImageCustomPC().size() == 0 && imgPCGroup.getSelectedToggle().equals(imgRadioCustom)) {
+			cpc_ok = false;
+			errorText += "Custom Pixel Color list empty\n";
+		}
+		
+		if(w != 0 && h != 0 && p_w != 0 && p_h != 0 && cpc_ok) {
 			if(imgPCGroup.getSelectedToggle().equals(imgRadioARGB)) {
 				main.renderImage(w, h, RenderLogic.COLOR_RGB, p_w, p_h, imgPCAlphaCB.isSelected());
 			}else if(imgPCGroup.getSelectedToggle().equals(imgRadioBW)) {
 				main.renderImage(w, h, RenderLogic.COLOR_BW, p_w, p_h, imgPCAlphaCB.isSelected());
+			}else if(imgPCGroup.getSelectedToggle().equals(imgRadioCustom)) {
+				main.renderImage(w, h, RenderLogic.COLOR_CUSTOM, p_w, p_h, imgPCAlphaCB.isSelected());
 			}
 		}else {
 			AlertWindow.showInfo("Try again", errorText.substring(0, errorText.length() - 1), AlertWindow.WARNING);
@@ -136,6 +148,7 @@ public class RootController {
 		int length = 0;
 		int p_w = 0;
 		int p_h = 0;
+		boolean cpc_ok = true;
 		
 		String errorText = "";
 		
@@ -177,11 +190,18 @@ public class RootController {
 			}
 		}
 		
-		if(w != 0 && h != 0 && fps != 0 && length != 0 && p_w != 0 && p_h != 0) {
+		if(vidPCGroup.getSelectedToggle().equals(vidRadioCustom) && main.getRenderLogic().getVideoCustomPC().size() == 0) {
+			cpc_ok = false;
+			errorText += "Custom Pixel Color list empty\n";
+		}
+		
+		if(w != 0 && h != 0 && fps != 0 && length != 0 && p_w != 0 && p_h != 0 && cpc_ok) {
 			if(vidPCGroup.getSelectedToggle().equals(vidRadioARGB)) {
 				main.renderVideo(w, h, fps, length, RenderLogic.COLOR_RGB, p_w, p_h);
 			}else if(vidPCGroup.getSelectedToggle().equals(vidRadioBW)) {
 				main.renderVideo(w, h, fps, length, RenderLogic.COLOR_BW, p_w, p_h);
+			}else if(vidPCGroup.getSelectedToggle().equals(vidRadioCustom)){
+				main.renderVideo(w, h, fps, length, RenderLogic.COLOR_CUSTOM, p_w, p_h);
 			}
 		}else {
 			AlertWindow.showInfo("Try again", errorText.substring(0, errorText.length() - 1), AlertWindow.WARNING);
@@ -273,6 +293,16 @@ public class RootController {
 	@FXML
 	private void videoCancel() {
 		main.getVideoLogicNote().setCancel(true);
+	}
+	
+	@FXML
+	private void imagePCCustom() {
+		main.showPCCustomDialog(true);
+	}
+	
+	@FXML
+	private void videoPCCustom() {
+		main.showPCCustomDialog(false);
 	}
 	
 	private ChangeListener<String> onlyIntFilter(TextField field) {

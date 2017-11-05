@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-
+import java.util.ArrayList;
 import javax.imageio.ImageIO;
 
 import io.humble.video.Codec;
@@ -22,21 +22,49 @@ public class RenderLogic {
 	
 	public static int COLOR_RGB = 0;
 	public static int COLOR_BW = 1;
+	public static int COLOR_CUSTOM = 2;
 	
-	private int imageWidth = 100;
-	private int imageHeight = 100;
-	private int imageColor = 1;
-	private int imagePixelWidth = 1;
-	private int imagePixelHeight = 1;
-	private boolean imageAlpha = false;
+	private int imageWidth;
+	private int imageHeight;
+	private int imageColor;
+	private int imagePixelWidth;
+	private int imagePixelHeight;
+	private boolean imageAlpha;
+	private ArrayList<CustomPixelColor> imageCustomPC = new ArrayList<CustomPixelColor>();
 	
-	private int videoWidth = 100;
-	private int videoHeight = 100;
-	private int videoFps = 30;
-	private int videoLength = 7;
-	private int videoColor = 1;
-	private int videoPixelWidth = 1;
-	private int videoPixelHeight = 1;
+	private int videoWidth;
+	private int videoHeight;
+	private int videoFps;
+	private int videoLength;
+	private int videoColor;
+	private int videoPixelWidth;
+	private int videoPixelHeight;
+	private ArrayList<CustomPixelColor> videoCustomPC = new ArrayList<CustomPixelColor>();
+	
+	public RenderLogic(boolean setData) {
+		if(setData) {
+			imageWidth = 100;
+			imageHeight = 100;
+			imageColor = 1;
+			imagePixelWidth = 1;
+			imagePixelHeight = 1;
+			imageAlpha = false;
+			imageCustomPC.add(new CustomPixelColor(Color.RED.getRGB()));
+			imageCustomPC.add(new CustomPixelColor(Color.GREEN.getRGB()));
+			imageCustomPC.add(new CustomPixelColor(Color.BLUE.getRGB()));
+			
+			videoWidth = 100;
+			videoHeight = 100;
+			videoFps = 30;
+			videoLength = 7;
+			videoColor = 1;
+			videoPixelWidth = 1;
+			videoPixelHeight = 1;
+			videoCustomPC.add(new CustomPixelColor(Color.RED.getRGB()));
+			videoCustomPC.add(new CustomPixelColor(Color.GREEN.getRGB()));
+			videoCustomPC.add(new CustomPixelColor(Color.BLUE.getRGB()));
+		}
+	}
 	
 	public void createImage(LogicNote logicNote) {
 		//Start
@@ -56,19 +84,32 @@ public class RenderLogic {
 					long start = System.currentTimeMillis();
 					
 					for (int w = 0; w < imageWidth; w++) {
-						int r;
-						int g;
-						int b;
+						int r = 0;
+						int g = 0;
+						int b = 0;
 						
-						if(imageColor == 0) {
+// TODO: Extend method and optimize color variable
+						switch (imageColor) {
+						case 0:
 							r = (int)(Math.random()*256);	//red
 							g = (int)(Math.random()*256);	//green
 							b = (int)(Math.random()*256);	//blue
-						}else {
+							break;
+						case 1:
 							r = g = b = (int)(Math.random()*256);
+							break;
+						case 2:
+							int i = (int)(Math.random()*imageCustomPC.size());
+							
+							Color c = new Color( imageCustomPC.get(i).getCPColor() );
+							
+							r = c.getRed();
+							g = c.getGreen();
+							b = c.getBlue();
+							
+							break;
 						}
-						
-					
+							
 						if(imageAlpha) {
 							int a = (int)(Math.random()*256);	//alpha
 							img.setRGB(w, h, new Color(r, g, b, a).getRGB());
@@ -104,16 +145,30 @@ public class RenderLogic {
 					long start = System.currentTimeMillis();
 					
 					for (int w = 0; w < imageWidth; w += imagePixelWidth) {
-						int r;
-						int g;
-						int b;
+						int r = 0;
+						int g = 0;
+						int b = 0;
 						
-						if(imageColor == 0) {
-							r = (int)(Math.random()*256);	//red
-							g = (int)(Math.random()*256);	//green
-							b = (int)(Math.random()*256);	//blue
-						}else {
+// TODO: Extend method and optimize color variable
+						switch (imageColor) {
+						case 0:
+							r = (int)(Math.random()*256);
+							g = (int)(Math.random()*256);
+							b = (int)(Math.random()*256);
+							break;
+						case 1:
 							r = g = b = (int)(Math.random()*256);
+							break;
+						case 2:
+							int i = (int)(Math.random()*imageCustomPC.size());
+							
+							Color c = new Color( imageCustomPC.get(i).getCPColor() );
+							
+							r = c.getRed();
+							g = c.getGreen();
+							b = c.getBlue();
+							
+							break;
 						}
 						
 						if(imageAlpha) {
@@ -170,7 +225,7 @@ public class RenderLogic {
 		
 		//End
 		logicNote.display("Done");
-		logicNote.displayAlert();
+		logicNote.displayAlert("Image");
 		logicNote.runing(false);
 	}
 	
@@ -279,7 +334,7 @@ public class RenderLogic {
 		//End
 		System.out.println("Done");
 		logicNote.display("Done");
-		logicNote.displayAlert();
+		logicNote.displayAlert("Video");
 		logicNote.runing(false);
 	}
 	
@@ -306,18 +361,26 @@ public class RenderLogic {
 		
 		return img;
 	}
-	
+
+// TODO: optimize color variable
 	private Color getRandomColor() {
-		int r;
-		int g;
-		int b;
+		int r = 0;
+		int g = 0;
+		int b = 0;
 		
-		if(videoColor == 0) {
+		switch (videoColor) {
+		case 0:
 			r = (int)(Math.random()*256);
 			g = (int)(Math.random()*256);
 			b = (int)(Math.random()*256);
-		}else {
+			break;
+		case 1:
 			r = g = b = (int)(Math.random()*256);
+			break;
+		case 2:
+			int i = (int)(Math.random()*videoCustomPC.size());
+			
+			return new Color( videoCustomPC.get(i).getCPColor() );
 		}
 		
 		return new Color(r, g, b);
@@ -378,6 +441,10 @@ public class RenderLogic {
 		this.imageAlpha = imageAlpha;
 	}
 
+	public ArrayList<CustomPixelColor> getImageCustomPC() {
+		return imageCustomPC;
+	}
+
 	public int getVideoWidth() {
 		return videoWidth;
 	}
@@ -432,5 +499,9 @@ public class RenderLogic {
 
 	public void setVideoPixelHeight(int videoPixelHeight) {
 		this.videoPixelHeight = videoPixelHeight;
-	}	
+	}
+	
+	public ArrayList<CustomPixelColor> getVideoCustomPC() {
+		return videoCustomPC;
+	}
 }

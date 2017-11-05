@@ -4,11 +4,14 @@ import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import lt.rg.rpr.model.LogicNote;
 import lt.rg.rpr.model.RenderLogic;
+import lt.rg.rpr.view.PCCustomDialogController;
 import lt.rg.rpr.view.RootController;
 
 public class Main extends Application{
@@ -17,7 +20,7 @@ public class Main extends Application{
 	private BorderPane root;
 	
 	private RenderLogic renderLogic;
-		
+	
 	LogicNote imageLogicNote = new LogicNote();
 	LogicNote videoLogicNote = new LogicNote();
 	
@@ -27,11 +30,12 @@ public class Main extends Application{
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		renderLogic = new RenderLogic();
+		renderLogic = new RenderLogic(true);
 		
 		this.primaryStage = primaryStage;
 		this.primaryStage.setTitle("Random pixel render");
-
+		this.primaryStage.getIcons().add(new Image("file:resources/images/icon_32.png"));
+		
 		System.out.println("Start");
 		long start = System.currentTimeMillis();
 
@@ -128,5 +132,36 @@ public class Main extends Application{
 			}
 		});
 		thread.start();
+	}
+	
+	public void showPCCustomDialog(boolean isImage) {	
+		try {
+			FXMLLoader loader = new FXMLLoader();
+		    loader.setLocation(getClass().getResource("view/PCCustomDialog.fxml"));
+		    BorderPane borderPane = (BorderPane) loader.load();
+		    
+		    Stage dialogStage = new Stage();
+		    if(isImage) {
+		    	dialogStage.setTitle("Image custom pixel color");
+		    }else {
+		    	dialogStage.setTitle("Video custom pixel color");
+		    }
+		    dialogStage.initModality(Modality.NONE);
+		    dialogStage.initOwner(primaryStage);
+		    Scene scene = new Scene(borderPane);
+			dialogStage.setScene(scene);
+		    
+			PCCustomDialogController pccdController = loader.getController();
+
+			if(isImage) {
+				pccdController.setTableList(renderLogic.getImageCustomPC());
+			}else {
+				pccdController.setTableList(renderLogic.getVideoCustomPC());
+			}
+			
+		    dialogStage.showAndWait();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }
